@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jeu 1 — Le Pendu</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Jeu 1 — Le Pendu</h1>
+      <p>Devinez le mot lié à l'écologie. Erreurs maximales : <strong>8</strong>.</p>
+      <div id="word" class="actions" style="font-size:1.8rem; letter-spacing:8px;"></div>
+      <div id="letters" class="grid"></div>
+      <div id="toast" class="footer"></div>
+      <div class="actions"><button class="btn-outline" onclick="location.reload()">Recommencer</button></div>
+    </div>
+  </div>
+
+  <script>
+  const secret = "RECYCLAGE"; // mot du pendu
+  const maxErrors = 8;
+  let guessed = new Set();
+  let errors = 0;
+
+  const wordDiv = document.getElementById('word');
+  const lettersDiv = document.getElementById('letters');
+  const toast = document.getElementById('toast');
+
+  function renderWord(){
+    let disp = '';
+    for (const ch of secret){
+      disp += guessed.has(ch) ? ch+' ' : '_ ';
+    }
+    wordDiv.textContent = disp.trim();
+  }
+
+  function checkWin(){
+    for (const ch of secret){
+      if(!guessed.has(ch)) return false;
+    }
+    return true;
+  }
+
+  function pick(letter){
+    if (guessed.has(letter)) return;
+    if (secret.includes(letter)){
+      guessed.add(letter);
+      renderWord();
+      if (checkWin()){
+        toast.textContent = "Bravo !";
+        setTimeout(()=>location.href='indice1.html', 700);
+      }
+    } else {
+      errors++;
+      toast.textContent = `Erreur ${errors}/${maxErrors}`;
+      if (errors >= maxErrors){
+        toast.textContent = "Échec… Réessayez";
+        setTimeout(()=>location.reload(), 900);
+      }
+    }
+  }
+
+  // Build alphabet
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  alphabet.forEach(l=>{
+    const b = document.createElement('button');
+    b.textContent = l;
+    b.className = 'btn';
+    b.style.minWidth = '44px';
+    b.onclick = ()=>pick(l);
+    lettersDiv.appendChild(b);
+  });
+  renderWord();
+  </script>
+</body>
+</html>

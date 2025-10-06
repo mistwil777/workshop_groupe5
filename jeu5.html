@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jeu 5 — En cours</title><link rel="stylesheet" href="style.css"></head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Jeu 5 — Nettoyez la planète</h1>
+      <p>Cliquez sur <strong>5 feuilles</strong> pour nettoyer la planète.</p>
+      <div class="actions" id="leaves"></div>
+      <div id="toast" class="footer"></div>
+    </div>
+  </div>
+<script>
+  const leaves = document.getElementById('leaves');
+  const t = document.getElementById('toast');
+  let count = 0;
+  for(let i=0;i<8;i++){
+    const span = document.createElement('span');
+    span.textContent = '🍃';
+    span.className='leaf';
+    span.onclick = () => {
+      if(!span.classList.contains('clicked')){
+        span.classList.add('clicked'); 
+        count++;
+        t.textContent = `Feuilles nettoyées : ${count}/5`;
+        if(count>=5){ t.textContent='Bravo !'; setTimeout(()=>location.href='indice5.html',600); }
+      }
+    };
+    leaves.appendChild(span);
+  }
+</script>
+</body>
+</html>

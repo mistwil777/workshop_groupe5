@@ -1,0 +1,85 @@
+/* Minimal, clean, eco-styled theme */
+:root{
+  --green:#2e7d32;
+  --light:#f2fff4;
+  --dark:#0e3d12;
+  --accent:#4caf50;
+  --danger:#c62828;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--light);color:#123;}
+
+.container{
+  max-width:960px;
+  margin:0 auto;
+  padding:24px;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+
+.card{
+  background:#fff;
+  border-radius:18px;
+  padding:28px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+  width:100%;
+}
+
+h1{font-size:2rem;margin:0 0 12px;color:var(--green)}
+h2{margin:8px 0 16px}
+p{line-height:1.6}
+
+.actions{margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+
+button,.btn{
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  padding:12px 18px;
+  border-radius:10px;
+  cursor:pointer;
+  text-decoration:none;
+  font-weight:600;
+}
+button:hover,.btn:hover{filter:brightness(0.95)}
+.btn-outline{background:transparent;color:var(--green);border:2px solid var(--green)}
+.btn-danger{background:var(--danger)}
+
+.input{
+  padding:10px 12px;
+  border-radius:8px;
+  border:1px solid #cfd8dc;
+  min-width:260px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:14px;
+  margin-top:14px;
+}
+
+.badge{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#e8f5e9;
+  color:#2e7d32;
+  font-weight:600;
+}
+
+.footer{margin-top:18px;color:#456;font-size:.9rem}
+hr{border:none;border-top:1px solid #eee;margin:16px 0}
+.small{font-size:.9rem;color:#678}
+.correct{color:var(--green);font-weight:700}
+.wrong{color:var(--danger);font-weight:700}
+.code{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;background:#f6faf6;border-radius:8px;padding:2px 6px}
+.word-grid{display:grid;grid-template-columns:repeat(6,40px);gap:8px;justify-content:center;margin:16px 0}
+.cell{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border:1px solid #cfd8dc;border-radius:6px;background:#fbfffc;font-weight:700}
+.leaf{font-size:42px;cursor:pointer;user-select:none;transition:transform .1s}
+.leaf.clicked{opacity:.25;transform:scale(.8)}

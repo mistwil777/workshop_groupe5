@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mot de passe final</title><link rel="stylesheet" href="style.css"></head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Final</h1>
+      <p>Entrez le mot de passe (indices trouvés) :</p>
+      <div class="actions">
+        <input class="input" id="pwd" placeholder="Mot de passe">
+        <button class="btn" onclick="check()">Valider</button>
+      </div>
+      <div id="toast" class="footer"></div>
+    </div>
+  </div>
+<script>
+  function check(){
+    const v = document.getElementById('pwd').value.trim().toUpperCase();
+    if(v === 'TERRE') location.href='success.html';
+    else location.href='fail.html';
+  }
+</script>
+</body>
+</html>

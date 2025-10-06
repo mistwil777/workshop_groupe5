@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jeu 3 — Quiz</title><link rel="stylesheet" href="style.css"></head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Jeu 3 — Quiz</h1>
+      <p><strong>Quel est le principal gaz à effet de serre produit par les activités humaines ?</strong></p>
+      <div class="grid">
+        <button class="btn-outline" onclick="goResult(true)">Le dioxyde de carbone (CO₂)</button>
+        <button class="btn-outline" onclick="goResult(false)">L’oxygène (O₂)</button>
+        <button class="btn-outline" onclick="goResult(false)">L’azote (N₂)</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    function goResult(ok){ location.href = 'resultat_quiz.html?ok='+(ok?'1':'0'); }
+  </script>
+</body>
+</html>

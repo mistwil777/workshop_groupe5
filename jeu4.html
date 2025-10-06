@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jeu 4 — Mots mêlés</title><link rel="stylesheet" href="style.css"></head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Jeu 4 — Mots mêlés</h1>
+      <p>Trouve les 3 mots liés à la nature dans la grille :</p>
+      <div class="word-grid">
+        <div class="cell">A</div><div class="cell">R</div><div class="cell">B</div><div class="cell">R</div><div class="cell">E</div><div class="cell">L</div>
+        <div class="cell">O</div><div class="cell">C</div><div class="cell">E</div><div class="cell">A</div><div class="cell">U</div><div class="cell">S</div>
+        <div class="cell">L</div><div class="cell">I</div><div class="cell">E</div><div class="cell">N</div><div class="cell">S</div><div class="cell">O</div>
+        <div class="cell">E</div><div class="cell">V</div><div class="cell">E</div><div class="cell">R</div><div class="cell">T</div><div class="cell">L</div>
+        <div class="cell">I</div><div class="cell">A</div><div class="cell">R</div><div class="cell">B</div><div class="cell">R</div><div class="cell">E</div>
+        <div class="cell">N</div><div class="cell">O</div><div class="cell">S</div><div class="cell">O</div><div class="cell">L</div><div class="cell">E</div>
+      </div>
+      <p class="small">Indice : les mots sont <span class="code">ARBRE</span>, <span class="code">EAU</span>, <span class="code">SOLEIL</span>.</p>
+      <div class="actions">
+        <input class="input" id="answer" placeholder="Ex: ARBRE, EAU, SOLEIL">
+        <button class="btn" onclick="check()">Valider</button>
+      </div>
+      <div id="toast" class="footer"></div>
+    </div>
+  </div>
+<script>
+  function norm(s){ return s.toUpperCase().replace(/\s+/g,'').split(',').filter(Boolean).sort().join(','); }
+  function check(){
+    const ok = norm(document.getElementById('answer').value) === 'ARBRE,EAU,SOLEIL';
+    const t = document.getElementById('toast');
+    if(ok){ t.textContent='Correct ✅'; setTimeout(()=>location.href='indice4.html',600); }
+    else { t.textContent='Mauvaise réponse ❌'; }
+  }
+</script>
+</body>
+</html>

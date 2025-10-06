@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Résultat Quiz</title><link rel="stylesheet" href="style.css"></head>
+<body>
+  <div class="container">
+    <div class="card" id="content">
+      <h1>Résultat</h1>
+      <p id="msg"></p>
+      <div class="actions" id="actions"></div>
+    </div>
+  </div>
+<script>
+  const params = new URLSearchParams(location.search);
+  const ok = params.get('ok') === '1';
+  const msg = document.getElementById('msg');
+  const act = document.getElementById('actions');
+  if(ok){
+    msg.innerHTML = "<span class='correct'>Bonne réponse !</span>";
+    act.innerHTML = "<a class='btn' href='indice3.html'>Continuer</a>";
+  } else {
+    msg.innerHTML = "<span class='wrong'>Mauvaise réponse.</span>";
+    act.innerHTML = "<a class='btn-outline' href='jeu3.html'>Réessayer</a>";
+  }
+</script>
+</body>
+</html>

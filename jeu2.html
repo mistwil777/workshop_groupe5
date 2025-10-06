@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jeu 2 — Trouve la bonne réponse</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Jeu 2 — Trouve la bonne réponse</h1>
+      <p><strong>Quel mode de transport est le moins écologique ?</strong></p>
+      <div class="grid">
+        <button class="btn-outline" onclick="wrong()">Vélo</button>
+        <button class="btn-outline" onclick="right()">Avion</button>
+        <button class="btn-outline" onclick="wrong()">Roller</button>
+        <button class="btn-outline" onclick="wrong()">Voiture (électrique exclue)</button>
+      </div>
+      <div id="toast" class="footer"></div>
+    </div>
+  </div>
+  <script>
+  const t = document.getElementById('toast');
+  function right(){ t.textContent="Correct ✅"; setTimeout(()=>location.href='indice2.html',600); }
+  function wrong(){ t.textContent="Mauvaise réponse ❌"; }
+  </script>
+</body>
+</html>
