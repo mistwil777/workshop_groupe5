@@ -3,29 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Green Lockdown - Énigme 1</title>
+    <title>Mission : Sauver la Planète</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-
-    <div class="container">
-        <h1>Énigme 1 : Le Système de Filtration</h1>
-        
-        <p id="message-jeu" class="message"></p>
-
-        <div id="mot-container" class="mot">
-            </div>
-
-        <div id="lettres-fausses-container">
-            <p>Lettres incorrectes : <span id="lettres-fausses"></span></p>
-        </div>
-
-        <div id="clavier-container" class="clavier hidden">
-            </div>
-
+    <div id="game-container" class="container">
+        <!-- Le contenu du jeu s'affichera ici -->
     </div>
 
+    <!-- Socket.IO -->
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <!-- Modular views: charger les vues JS des énigmes ici -->
+    <script src="{{ url_for('static', filename='js/views/view_jeu1.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/views/view_jeu2.js') }}"></script>
+    <!-- Orchestrateur principal -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
