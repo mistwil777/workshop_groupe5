@@ -7,9 +7,12 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+
     <div id="game-container" class="container">
         <!-- Le contenu du jeu s'affichera ici -->
     </div>
+    <!-- Pop-up de félicitations animée -->
+    <div id="felicitation-popup" class="felicitation-popup"></div>
 
     <!-- Socket.IO -->
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>

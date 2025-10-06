@@ -4,9 +4,11 @@ eventlet.monkey_patch()
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit, join_room
 
+
 import random
 import string
-from games import game_1_pendu
+import json
+from games import game_1_pendu, game_2_quiz_order
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'workshop_secret_key_2025'
@@ -18,17 +20,33 @@ rooms = {}
 # --- Fonctions de création des états de jeu ---
 
 
-def create_game_state():
+
+# --- Chargement des scénarios quiz à ordonner ---
+with open('app/data/enigmes.json', encoding='utf-8') as f:
+    ENIGMES_QUIZ_ORDER = json.load(f)
+
+def create_game_state(niveau='college'):
     """Crée un nouvel objet d'état complet pour une partie."""
+    # ENIGMES_QUIZ_ORDER est maintenant un dict par niveau
+    scenarios = ENIGMES_QUIZ_ORDER.get(niveau, ENIGMES_QUIZ_ORDER.get('college', []))
+    scenario = random.choice(scenarios) if scenarios else None
+    jeu2_state = game_2_quiz_order.create_state()
+    jeu2_state['scenario'] = scenario
+    # Génération dynamique des indices (chiffres) et du code à deviner
+    nb_questions = len(scenario['forces']) if scenario else 4
+    indices_chiffres = [str(random.randint(0, 9)) for _ in range(nb_questions)]
+    code_final = ''.join(indices_chiffres)
+    jeu2_state['indices_chiffres'] = indices_chiffres
+    jeu2_state['code_final'] = code_final
     return {
         'vue_actuelle': 'lobby',
         'joueurs': {},
         'host_sid': None,
         'token': None,
+        'niveau': niveau,
         'indices_collectes': [],
-        # --- On prépare l'état pour chaque énigme ---
-        'jeu1_state': game_1_pendu.create_state()
-        # 'jeu2_state': game_2_xxx.create_state(), # À ajouter plus tard
+        'jeu1_state': game_1_pendu.create_state(),
+        'jeu2_state': jeu2_state
     }
 
 def generate_token():
@@ -46,18 +64,19 @@ def index():
 # --- Gestion des Salons (Rooms) ---
 
 @socketio.on('create_room')
-def handle_create_room():
+def handle_create_room(data=None):
     sid = request.sid
+    niveau = 'college'
+    if data and isinstance(data, dict):
+        niveau = data.get('niveau', 'college')
     token = generate_token()
-    rooms[token] = create_game_state()
+    rooms[token] = create_game_state(niveau)
     room = rooms[token]
-    
     room['token'] = token
     room['host_sid'] = sid
     room['joueurs'][sid] = {'id': sid, 'nom': 'Hôte'}
-    
     join_room(token)
-    print(f"Room créée: {token} par {sid}")
+    print(f"Room créée: {token} par {sid} (niveau={niveau})")
     emit('room_update', room)
 
 @socketio.on('join_room')
@@ -78,12 +97,16 @@ def handle_changer_vue(data):
     """Gère la navigation entre les écrans non interactifs."""
     token = data.get('token')
     nouvelle_vue = data.get('vue')
+    print(f"[DEBUG] changer_vue reçu: token={token}, vue={nouvelle_vue}, data={data}")
     if token in rooms:
         room = rooms[token]
+        room['vue_actuelle'] = nouvelle_vue
+        print(f"[DEBUG] room['vue_actuelle'] après changer_vue: {room['vue_actuelle']}")
         # Logique pour assigner l'opérateur quand on entre dans le jeu 1
         if nouvelle_vue == 'jeu1':
             if not room['jeu1_state']['operateur_sid'] and room['joueurs']:
                 room['jeu1_state']['operateur_sid'] = list(room['joueurs'].keys())[0]
+        print(f"[DEBUG] room envoyé: {room}")
         emit('room_update', room, to=token)
 
 @socketio.on('start_game')

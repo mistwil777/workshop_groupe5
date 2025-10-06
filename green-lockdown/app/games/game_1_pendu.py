@@ -30,7 +30,7 @@ def handle_action(room, sid, action_data):
             if '_' not in game_state['mot_affiche']:
                 game_state['partie_terminee'] = True
                 game_state['gagne'] = True
-                vue_change = 'jeu2'
+                vue_change = 'indice1'
                 if 'T' not in room['indices_collectes']:
                     room['indices_collectes'].append('T')
             elif game_state['erreurs'] >= game_state['max_erreurs']:

@@ -1,13 +1,19 @@
 /* Style général */
+
 body {
     font-family: 'Courier New', Courier, monospace;
-    background-color: #1a1a1a;
-    color: #00ff00;
+    background: linear-gradient(135deg, #0f2027 0%, #2c5364 100%);
+    color: #b6ff00;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
+    /* Jungle locale fournie par l'utilisateur */
+    background-image: url('/static/img/gros-plan-de-plantes-grimpantes-dans-la-foret-de-la-municipalite-de-skrad-en-croatie.jpg');
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: multiply;
 }
 
 .container {
@@ -17,36 +23,94 @@ body {
 }
 
 .card {
-    border: 2px solid #00ff00;
+    border: 2px solid #4be54b;
     padding: 20px 40px;
-    background-color: #000;
-    box-shadow: 0 0 20px #00ff00;
+    background: rgba(0, 32, 16, 0.92);
+    box-shadow: 0 0 30px #4be54b, 0 0 80px #00e6e6 inset;
+    border-radius: 18px;
+    position: relative;
 }
 
-h1 { font-size: 1.8em; }
-p { font-size: 1.1em; }
+/* Titres et textes */
+h1 {
+    font-size: 2em;
+    color: #b6ff00;
+    letter-spacing: 2px;
+    margin-bottom: 0.5em;
+    text-shadow: 0 0 8px #4be54b, 0 0 2px #fff;
+}
+p {
+    font-size: 1.1em;
+    color: #e0ffe0;
+}
+.enviro-emoji {
+    font-size: 2em;
+    margin-bottom: 0.2em;
+}
 .small { font-size: 0.9em; color: #aaa; }
 
 /* Éléments interactifs */
 .actions { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 20px; }
 .btn {
-    background-color: transparent; border: 1px solid #00ff00; color: #00ff00;
+    background-color: transparent; border: 1.5px solid #4be54b; color: #b6ff00;
     font-size: 1.2em; padding: 10px 20px; cursor: pointer;
-    transition: background-color 0.3s, color 0.3s; width: 100%;
+    transition: background 0.3s, color 0.3s, border 0.3s;
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 0 8px #4be54b inset;
 }
-.btn:hover:not(:disabled) { background-color: #00ff00; color: #000; }
+.btn:hover:not(:disabled) {
+    background: linear-gradient(90deg, #b6ff00 0%, #00e6e6 100%);
+    color: #003300;
+    border-color: #00e6e6;
+}
+/* Inputs */
 .input {
-    background-color: #222; border: 1px solid #00ff00; color: #00ff00;
-    padding: 10px; font-size: 1.2em; text-align: center; width: calc(100% - 22px);
+    background-color: #eaffea;
+    border: 1.5px solid #4be54b;
+    color: #003300;
+    padding: 10px;
+    font-size: 1.2em;
+    text-align: center;
+    width: calc(100% - 22px);
+    border-radius: 6px;
 }
 ::placeholder { color: #555; }
 
 /* Éléments spécifiques au jeu */
 .joueurs-liste { list-style: none; padding: 0; }
-.token-display { font-size: 2.5em; letter-spacing: 10px; margin: 10px 0; border: 1px dashed #00ff00; padding: 10px; }
-.badge { background-color: #00ff00; color: #000; padding: 5px 10px; font-weight: bold; }
-.mot { font-size: 2em; letter-spacing: 10px; margin: 20px 0; }
-.clavier { display: grid; grid-template-columns: repeat(auto-fit, minmax(40px, 1fr)); gap: 5px; width: 100%; margin-top: 20px; }
+.token-display {
+    font-size: 2.2em;
+    letter-spacing: 10px;
+    margin: 10px 0;
+    border: 1.5px dashed #00e6e6;
+    padding: 10px;
+    background: rgba(0, 255, 128, 0.08);
+    color: #00e6e6;
+    border-radius: 8px;
+}
+.badge {
+    background: linear-gradient(90deg, #b6ff00 0%, #00e6e6 100%);
+    color: #003300;
+    padding: 5px 12px;
+    font-weight: bold;
+    border-radius: 6px;
+    box-shadow: 0 0 6px #4be54b;
+}
+.mot {
+    font-size: 2em;
+    letter-spacing: 10px;
+    margin: 20px 0;
+    color: #b6ff00;
+    text-shadow: 0 0 8px #4be54b;
+}
+.clavier {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+    gap: 5px;
+    width: 100%;
+    margin-top: 20px;
+}
 .touche-clavier:disabled {
     border-color: #555;
     color: #555;
@@ -60,7 +124,74 @@ p { font-size: 1.1em; }
     color: #00ff00;
 }
 .lettres-incorrectes {
-    color: #ff9800;
+    color: #00e6e6;
     font-weight: bold;
     letter-spacing: 2px;
+    text-shadow: 0 0 6px #b6ff00;
+}
+
+/* Chronomètre */
+.chrono-global, .chrono-jeu {
+    background: rgba(0,255,128,0.12);
+    color: #00e6e6;
+    font-size: 1.1em;
+    padding: 6px 16px;
+    border-radius: 8px;
+    margin: 10px auto 10px auto;
+    display: inline-block;
+    box-shadow: 0 0 8px #00e6e6 inset;
+}
+
+/* Message de victoire */
+.victoire-message {
+    color: #b6ff00;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin: 20px 0 10px 0;
+    text-shadow: 0 0 10px #4be54b, 0 0 2px #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Overlay de félicitations */
+.felicitation-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,32,16,0.92);
+    z-index: 999999 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: all;
+}
+.felicitation-content {
+    background: rgba(0,255,128,0.18);
+    color: #b6ff00;
+    font-size: 2em;
+    font-weight: bold;
+    border-radius: 18px;
+    padding: 40px 60px;
+    box-shadow: 0 0 40px #4be54b, 0 0 80px #00e6e6 inset;
+    text-align: center;
+    text-shadow: 0 0 10px #4be54b, 0 0 2px #fff;
+    animation: felicite-slidein 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+}
+.felicite-anim {
+    animation: felicite-slidein 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+}
+.felicite-out {
+    animation: felicite-slideout 0.8s cubic-bezier(.68,-0.55,.27,1.55) forwards;
+}
+@keyframes felicite-slidein {
+    0% { transform: translateY(-120vh) scale(0.7); opacity: 0; }
+    60% { transform: translateY(30px) scale(1.08); opacity: 1; }
+    80% { transform: translateY(-10px) scale(1.04); }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes felicite-slideout {
+    0% { transform: translateY(0) scale(1); opacity: 1; }
+    60% { transform: translateY(30px) scale(1.08); opacity: 1; }
+    100% { transform: translateY(120vh) scale(0.7); opacity: 0; }
 }

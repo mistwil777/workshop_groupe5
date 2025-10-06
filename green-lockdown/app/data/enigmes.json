@@ -1,64 +1,41 @@
-[
-  {
-    "title": "Sauver la centrale solaire",
-    "scenarioText": "Quatre forces menacent la centrale. Pour obtenir le code, résolvez chaque quiz et ordonnez les indices.",
-    "forces": [
-      {
-        "symbol": "🌪️",
-        "quiz": "Quel vent souffle le plus fort ?",
-        "answer": "ouragan",
-        "clueText": "3"
-      },
-      {
-        "symbol": "🔥",
-        "quiz": "Quel est le point d’ignition du papier (en °C) ?",
-        "answer": "233",
-        "clueText": "1"
-      },
-      {
-        "symbol": "💧",
-        "quiz": "Combien de litres dans un mètre cube d’eau ?",
-        "answer": "1000",
-        "clueText": "4"
-      },
-      {
-        "symbol": "⚡",
-        "quiz": "Symbole chimique du sodium ?",
-        "answer": "Na",
-        "clueText": "2"
-      }
-    ],
-    "secretCode": "1324"
-  },
-  {
-    "title": "Sécuriser le barrage hydroélectrique",
-    "scenarioText": "Quatre forces naturelles testent la sécurité du barrage. Résolvez chaque quiz pour obtenir le code.",
-    "forces": [
-      {
-        "symbol": "🌊",
-        "quiz": "Quel est le plus grand océan du monde ?",
-        "answer": "Pacifique",
-        "clueText": "2"
-      },
-      {
-        "symbol": "🌩️",
-        "quiz": "Combien de volts dans un kilovolt ?",
-        "answer": "1000",
-        "clueText": "4"
-      },
-      {
-        "symbol": "🌱",
-        "quiz": "Quelle plante produit du coton ?",
-        "answer": "cotonnier",
-        "clueText": "1"
-      },
-      {
-        "symbol": "🪨",
-        "quiz": "Quel est le principal composant du sable ?",
-        "answer": "silice",
-        "clueText": "3"
-      }
-    ],
-    "secretCode": "2413"
-  }
-]
+{
+  "primaire": [
+    {
+      "title": "Mission Forêt Magique",
+      "scenarioText": "Réponds à chaque question pour sauver la forêt magique !",
+      "forces": [
+  { "symbol": "🌳", "quiz": "Quel animal vit dans une mare et coasse ?", "answer": "grenouille", "help": "C'est un petit animal vert qui saute." },
+  { "symbol": "🌞", "quiz": "Combien y a-t-il de jours dans une semaine ?", "answer": "7", "help": "C'est plus que 6 et moins que 8." },
+  { "symbol": "💧", "quiz": "Quel liquide boit-on tous les jours ?", "answer": "eau", "help": "On la trouve dans les rivières et les verres." },
+  { "symbol": "🍎", "quiz": "Quel fruit est jaune et courbé ?", "answer": "banane", "help": "On l'épluche avant de la manger." }
+  ]
+      
+    }
+  ],
+  "college": [
+    {
+      "title": "Sauver la centrale solaire",
+      "scenarioText": "Quatre forces menacent la centrale. Pour obtenir le code, résolvez chaque quiz et ordonnez les indices.",
+      "forces": [
+  { "symbol": "🌪️", "quiz": "Quel vent très fort porte aussi le nom de cyclone dans d'autres régions ?", "answer": "ouragan", "help": "On l'appelle aussi cyclone ou typhon selon les continents." },
+  { "symbol": "🔥", "quiz": "Quel gaz est essentiel à la respiration humaine ?", "answer": "oxygène", "help": "C'est le gaz O2." },
+  { "symbol": "💧", "quiz": "Quel est l'état solide de l'eau ?", "answer": "glace", "help": "On la trouve dans le congélateur ou en hiver." },
+  { "symbol": "⚡", "quiz": "Quel astre éclaire la Terre le jour ?", "answer": "soleil", "help": "C'est une étoile très proche de la Terre." }
+  ]
+      
+    }
+  ],
+  "lycee": [
+    {
+      "title": "Sécuriser le barrage hydroélectrique",
+      "scenarioText": "Quatre forces naturelles testent la sécurité du barrage. Résolvez chaque quiz pour obtenir le code.",
+      "forces": [
+  { "symbol": "🌊", "quiz": "Quel est le plus grand océan du monde ?", "answer": "Pacifique", "help": "Il borde l'Asie, l'Océanie et l'Amérique." },
+  { "symbol": "🌩️", "quiz": "Combien de volts dans un kilovolt ?", "answer": "1000", "help": "C'est 10 fois 100." },
+  { "symbol": "🌱", "quiz": "Quelle plante produit du coton ?", "answer": "cotonnier", "help": "Son nom commence par 'coton'." },
+  { "symbol": "🪨", "quiz": "Quel est le principal composant du sable ?", "answer": "silice", "help": "C'est aussi appelé dioxyde de silicium." }
+  ]
+      
+    }
+  ]
+}

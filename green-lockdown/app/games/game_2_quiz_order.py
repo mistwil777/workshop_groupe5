@@ -6,7 +6,11 @@ def create_state():
         'scenario': None,  # Sera injecté par le moteur
         'indices_reveles': [False, False, False, False],
         'code_propose': '',
-        'gagne': False
+        'gagne': False,
+        'erreurs': [0, 0, 0, 0],  # Compteur d'erreurs par question
+        'indices_aide': [False, False, False, False],  # Affichage de l'indice d'aide
+        'indices_chiffres': [],  # Ajouté dynamiquement par le main
+        'code_final': ''         # Ajouté dynamiquement par le main
     }
 
 def handle_action(room, sid, action_data):
@@ -21,9 +25,17 @@ def handle_action(room, sid, action_data):
         bonne_reponse = str(scenario['forces'][force_idx]['answer']).strip().lower()
         if reponse == bonne_reponse:
             state['indices_reveles'][force_idx] = True
+            state['indices_aide'][force_idx] = False  # On masque l'aide si réussite
+        else:
+            # Incrémente le compteur d'erreurs
+            state['erreurs'][force_idx] += 1
+            # Si 2 erreurs, on affiche l'indice d'aide
+            if state['erreurs'][force_idx] >= 2:
+                state['indices_aide'][force_idx] = True
     elif action_type == 'submit_code':
-        code = str(action_data.get('code', '')).strip()
+        code = str(action_data.get('code', '')).strip().replace(' ', '').lower()
+        secret = ''.join(state.get('indices_chiffres', []))
         state['code_propose'] = code
-        if code == scenario['secretCode']:
+        if code == secret:
             state['gagne'] = True
             room['vue_actuelle'] = 'indice2'  # Ou autre vue de victoire
