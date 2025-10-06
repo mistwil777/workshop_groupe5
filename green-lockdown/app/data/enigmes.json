@@ -1,0 +1,64 @@
+[
+  {
+    "title": "Sauver la centrale solaire",
+    "scenarioText": "Quatre forces menacent la centrale. Pour obtenir le code, résolvez chaque quiz et ordonnez les indices.",
+    "forces": [
+      {
+        "symbol": "🌪️",
+        "quiz": "Quel vent souffle le plus fort ?",
+        "answer": "ouragan",
+        "clueText": "3"
+      },
+      {
+        "symbol": "🔥",
+        "quiz": "Quel est le point d’ignition du papier (en °C) ?",
+        "answer": "233",
+        "clueText": "1"
+      },
+      {
+        "symbol": "💧",
+        "quiz": "Combien de litres dans un mètre cube d’eau ?",
+        "answer": "1000",
+        "clueText": "4"
+      },
+      {
+        "symbol": "⚡",
+        "quiz": "Symbole chimique du sodium ?",
+        "answer": "Na",
+        "clueText": "2"
+      }
+    ],
+    "secretCode": "1324"
+  },
+  {
+    "title": "Sécuriser le barrage hydroélectrique",
+    "scenarioText": "Quatre forces naturelles testent la sécurité du barrage. Résolvez chaque quiz pour obtenir le code.",
+    "forces": [
+      {
+        "symbol": "🌊",
+        "quiz": "Quel est le plus grand océan du monde ?",
+        "answer": "Pacifique",
+        "clueText": "2"
+      },
+      {
+        "symbol": "🌩️",
+        "quiz": "Combien de volts dans un kilovolt ?",
+        "answer": "1000",
+        "clueText": "4"
+      },
+      {
+        "symbol": "🌱",
+        "quiz": "Quelle plante produit du coton ?",
+        "answer": "cotonnier",
+        "clueText": "1"
+      },
+      {
+        "symbol": "🪨",
+        "quiz": "Quel est le principal composant du sable ?",
+        "answer": "silice",
+        "clueText": "3"
+      }
+    ],
+    "secretCode": "2413"
+  }
+]

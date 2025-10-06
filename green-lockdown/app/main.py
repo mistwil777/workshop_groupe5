@@ -1,131 +1,124 @@
-# -*- coding: utf-8 -*-
+import eventlet
+eventlet.monkey_patch()
 
-# --- Importations des librairies nécessaires ---
 from flask import Flask, render_template, request
-from flask_socketio import SocketIO, emit, join_room, leave_room
+from flask_socketio import SocketIO, emit, join_room
 
-# --- Initialisation de l'application Flask et de SocketIO ---
+import random
+import string
+from games import game_1_pendu
+
 app = Flask(__name__)
-# Une clé secrète est nécessaire pour sécuriser les sessions et les communications
-app.config['SECRET_KEY'] = 'la-cle-secrete-de-votre-equipe' 
-# L'async_mode='eventlet' est recommandé pour de meilleures performances avec SocketIO
+app.config['SECRET_KEY'] = 'workshop_secret_key_2025'
 socketio = SocketIO(app, async_mode='eventlet', cors_allowed_origins="*")
 
-# --- État du jeu ---
-# C'est un dictionnaire qui va contenir toutes les informations de notre jeu.
-# Il est stocké en mémoire sur le serveur.
-game_state = {
-    'mot_a_deviner': list("RECYCLAGE"),
-    'mot_affiche': [],
-    'lettres_proposees': set(),
-    'erreurs': 0,
-    'max_erreurs': 6,
-    'partie_terminee': False,
-    'message': "En attente des joueurs...",
-    'joueurs': {}, # Dictionnaire pour stocker les infos des joueurs (ID: role)
-    'operateur_sid': None
-}
+# --- Base de données en mémoire pour les parties ---
+rooms = {}
 
-# Initialise le mot affiché avec des tirets
-game_state['mot_affiche'] = ['_' for _ in game_state['mot_a_deviner']]
+# --- Fonctions de création des états de jeu ---
 
 
-# --- Routes de l'application ---
+def create_game_state():
+    """Crée un nouvel objet d'état complet pour une partie."""
+    return {
+        'vue_actuelle': 'lobby',
+        'joueurs': {},
+        'host_sid': None,
+        'token': None,
+        'indices_collectes': [],
+        # --- On prépare l'état pour chaque énigme ---
+        'jeu1_state': game_1_pendu.create_state()
+        # 'jeu2_state': game_2_xxx.create_state(), # À ajouter plus tard
+    }
 
-# Route principale qui affiche la page du jeu
+def generate_token():
+    """Génère un token de room unique de 4 lettres."""
+    while True:
+        token = ''.join(random.choices(string.ascii_uppercase, k=4))
+        if token not in rooms:
+            return token
+
+# --- Route principale de l'application ---
 @app.route('/')
 def index():
-    # render_template va chercher le fichier dans le dossier /templates
     return render_template('index.html')
 
-# --- Événements SocketIO (le coeur de la logique temps réel) ---
+# --- Gestion des Salons (Rooms) ---
 
-@socketio.on('connect')
-def handle_connect():
-    """
-    Gère la connexion d'un nouveau client.
-    """
-    # request.sid est un identifiant unique pour chaque connexion client
+@socketio.on('create_room')
+def handle_create_room():
     sid = request.sid
+    token = generate_token()
+    rooms[token] = create_game_state()
+    room = rooms[token]
     
-    # Le premier joueur à se connecter devient l'opérateur
-    if not game_state['operateur_sid']:
-        game_state['operateur_sid'] = sid
-        game_state['joueurs'][sid] = 'operateur'
-        game_state['message'] = "Un opérateur a rejoint. C'est à lui/elle de jouer !"
+    room['token'] = token
+    room['host_sid'] = sid
+    room['joueurs'][sid] = {'id': sid, 'nom': 'Hôte'}
+    
+    join_room(token)
+    print(f"Room créée: {token} par {sid}")
+    emit('room_update', room)
+
+@socketio.on('join_room')
+def handle_join_room(data):
+    sid = request.sid
+    token = data.get('token', '').upper()
+    if token in rooms:
+        room = rooms[token]
+        num_joueur = len(room['joueurs']) + 1
+        room['joueurs'][sid] = {'id': sid, 'nom': f'Joueur {num_joueur}'}
+        join_room(token)
+        print(f"{sid} a rejoint la room {token}")
+        emit('room_update', room, to=token)
     else:
-        game_state['joueurs'][sid] = 'observateur'
-    
-    print(f"Client connecté: {sid}, Rôle: {game_state['joueurs'][sid]}")
-    
-    # On envoie l'état complet du jeu à TOUS les clients connectés
-    # 'broadcast=True' signifie "envoyer à tout le monde"
-    emit('mise_a_jour_etat', game_state, broadcast=True)
+        emit('error', {'message': 'Cette partie n\'existe pas.'})
+@socketio.on('changer_vue')
+def handle_changer_vue(data):
+    """Gère la navigation entre les écrans non interactifs."""
+    token = data.get('token')
+    nouvelle_vue = data.get('vue')
+    if token in rooms:
+        room = rooms[token]
+        # Logique pour assigner l'opérateur quand on entre dans le jeu 1
+        if nouvelle_vue == 'jeu1':
+            if not room['jeu1_state']['operateur_sid'] and room['joueurs']:
+                room['jeu1_state']['operateur_sid'] = list(room['joueurs'].keys())[0]
+        emit('room_update', room, to=token)
 
-
-@socketio.on('proposer_lettre')
-def handle_proposer_lettre(data):
-    """
-    Gère la proposition d'une lettre par l'opérateur.
-    """
+@socketio.on('start_game')
+def handle_start_game(data):
+    """Gère le lancement de la partie par l'hôte."""
     sid = request.sid
-    # On vérifie si la partie n'est pas terminée ET si le joueur est bien l'opérateur
-    if not game_state['partie_terminee'] and sid == game_state['operateur_sid']:
-        lettre = data['lettre'].upper()
-
-        # On vérifie que la lettre n'a pas déjà été jouée
-        if lettre not in game_state['lettres_proposees']:
-            game_state['lettres_proposees'].add(lettre)
-
-            # Si la lettre est dans le mot
-            if lettre in game_state['mot_a_deviner']:
-                # On met à jour le mot affiché
-                for i, l in enumerate(game_state['mot_a_deviner']):
-                    if l == lettre:
-                        game_state['mot_affiche'][i] = lettre
-            # Si la lettre n'est pas dans le mot
-            else:
-                game_state['erreurs'] += 1
-
-            # On vérifie si la partie est gagnée ou perdue
-            check_game_over()
-        
-        # Après chaque action, on envoie le nouvel état à tout le monde
-        emit('mise_a_jour_etat', game_state, broadcast=True)
+    token = data.get('token')
+    if token in rooms and sid == rooms[token]['host_sid']:
+        room = rooms[token]
+        room['vue_actuelle'] = 'intro'
+        print(f"La partie {token} est lancée par l'hôte.")
+        emit('room_update', room, to=token)
 
 
-def check_game_over():
-    """
-    Vérifie l'état de la partie (gagnée, perdue ou en cours).
-    """
-    # Condition de victoire : il n'y a plus de '_' dans le mot affiché
-    if '_' not in game_state['mot_affiche']:
-        game_state['partie_terminee'] = True
-        game_state['message'] = "Gagné ! Le mot était bien RECYCLAGE. Passage à l'énigme suivante..."
-    
-    # Condition de défaite : le nombre max d'erreurs est atteint
-    elif game_state['erreurs'] >= game_state['max_erreurs']:
-        game_state['partie_terminee'] = True
-        game_state['message'] = f"Perdu ! Le mot était RECYCLAGE."
+# --- Gestion générique des actions de jeu (modulaire) ---
 
-@socketio.on('disconnect')
-def handle_disconnect():
-    """
-    Gère la déconnexion d'un client.
-    """
+# --- Gestion générique des actions de jeu (modulaire) ---
+@socketio.on('game_action')
+def handle_game_action(data):
     sid = request.sid
-    print(f"Client déconnecté: {sid}")
-    # Si l'opérateur se déconnecte, il faudrait une logique pour en élire un nouveau (simplification pour l'instant)
-    if sid in game_state['joueurs']:
-        del game_state['joueurs'][sid]
-        if sid == game_state['operateur_sid']:
-            game_state['operateur_sid'] = None # Réinitialise l'opérateur
-            print("L'opérateur s'est déconnecté.")
-    
-    emit('mise_a_jour_etat', game_state, broadcast=True)
+    token = data.get('token')
+    game = data.get('game')
+    action = data.get('action')
+    if token in rooms:
+        room = rooms[token]
+        vue_change = None
+        if game == 'jeu1':
+            vue_change = game_1_pendu.handle_action(room, sid, action)
+        elif game == 'jeu2':
+            from games import game_2_quiz_order
+            vue_change = game_2_quiz_order.handle_action(room, sid, action)
+        if vue_change:
+            room['vue_actuelle'] = vue_change
+        emit('room_update', room, to=token)
 
-
-# --- Point d'entrée pour lancer l'application ---
 if __name__ == '__main__':
-    # socketio.run est la commande pour démarrer le serveur de développement
     socketio.run(app, debug=True, port=5000)
+

@@ -1,96 +1,114 @@
-// Attend que tout le contenu de la page soit chargé avant d'exécuter le script
 document.addEventListener('DOMContentLoaded', () => {
+    const socket = io("http://127.0.0.1:5000");
+    const gameContainer = document.getElementById('game-container');
+    let monSid = null;
+    let maRoomState = null;
 
-    // Connexion au serveur WebSocket
-    const socket = io("http://localhost:5001");
-
-    // --- Récupération des éléments du DOM ---
-    // On stocke les éléments de la page dans des variables pour y accéder facilement
-    const motContainer = document.getElementById('mot-container');
-    const lettresFaussesElement = document.getElementById('lettres-fausses');
-    const messageJeu = document.getElementById('message-jeu');
-    const clavierContainer = document.getElementById('clavier-container');
-
-    // Variable pour stocker mon rôle ('operateur' ou 'observateur')
-    let monRole = null;
-
-    // --- Gestion des événements SocketIO ---
-
-    // Événement de connexion initial
-    socket.on('connect', () => {
-        console.log('Connecté au serveur WebSocket avec l-id :', socket.id);
-    });
-
-    // Événement principal : le serveur envoie le nouvel état du jeu
-    socket.on('mise_a_jour_etat', (etatJeu) => {
-        console.log("Nouvel état du jeu reçu :", etatJeu);
-        
-        // On détermine mon rôle en comparant mon ID (socket.id) avec l'ID de l'opérateur
-        monRole = (socket.id === etatJeu.operateur_sid) ? 'operateur' : 'observateur';
-
-        // On met à jour l'affichage de la page avec les nouvelles données
-        mettreAJourAffichage(etatJeu);
-    });
-
-
-    // --- Fonctions d'affichage ---
-
-    function mettreAJourAffichage(etatJeu) {
-        // 1. Mettre à jour le mot affiché (ex: _ E C _ C L _ _ E)
-        motContainer.textContent = etatJeu.mot_affiche.join(' ');
-
-        // 2. Mettre à jour la liste des lettres fausses
-        const fausses = Array.from(etatJeu.lettres_proposees).filter(lettre => !etatJeu.mot_a_deviner.includes(lettre));
-        lettresFaussesElement.textContent = fausses.join(', ');
-
-        // 3. Afficher le message du jeu
-        messageJeu.textContent = etatJeu.message;
-
-        // 4. Gérer l'affichage et l'état du clavier
-        // Si je suis l'opérateur ET que la partie n'est pas terminée...
-        if (monRole === 'operateur' && !etatJeu.partie_terminee) {
-            clavierContainer.classList.remove('hidden'); // On affiche le clavier
-            mettreAJourClavier(etatJeu.lettres_proposees);
-        } else {
-            clavierContainer.classList.add('hidden'); // Sinon, on le cache
-        }
-    }
-
-    function mettreAJourClavier(lettresProposees) {
-        // On génère le clavier s'il est vide
-        if (clavierContainer.innerHTML === '') {
-            genererClavier();
-        }
-
-        // On parcourt toutes les touches du clavier
-        document.querySelectorAll('.touche-clavier').forEach(touche => {
-            // Si la lettre de la touche a déjà été proposée...
-            if (lettresProposees.has(touche.dataset.lettre)) {
-                touche.disabled = true; // On la désactive
-                touche.classList.add('utilisee');
-            } else {
-                touche.disabled = false;
-                touche.classList.remove('utilisee');
+    // Modular view system
+    window.views = window.views || {};
+    const views = {
+        accueil: {
+            render: () => `
+                <div class="card">
+                    <h1>Mission : Sauver la planète</h1>
+                    <div class="actions vertical">
+                        <button id="create-button" class="btn">Créer une partie</button>
+                        <hr style="width:100%; border-color: #00ff00;">
+                        <input id="token-input" class="input" placeholder="CODE (ex: ABCD)" maxlength="4" style="text-transform:uppercase">
+                        <button id="join-button" class="btn">Rejoindre une partie</button>
+                    </div>
+                </div>`,
+            attachEvents: () => {
+                document.getElementById('create-button').addEventListener('click', () => socket.emit('create_room'));
+                document.getElementById('join-button').addEventListener('click', () => {
+                    const token = document.getElementById('token-input').value;
+                    if (token) socket.emit('join_room', { token: token });
+                });
             }
-        });
-    }
+        },
+        lobby: {
+            render: (state) => {
+                const estHote = monSid === state.host_sid;
+                const joueursListe = Object.values(state.joueurs).map(j => `<li>${j.nom} ${j.id === state.host_sid ? '👑' : ''}</li>`).join('');
+                return `
+                    <div class="card">
+                        <h1>SALON DE LA PARTIE</h1>
+                        <p>Partagez ce code avec vos amis :</p>
+                        <div class="token-display">${state.token}</div>
+                        <h3>Joueurs connectés :</h3>
+                        <ul class="joueurs-liste">${joueursListe}</ul>
+                        ${estHote ? '<button id="start-button" class="btn">Lancer la partie</button>' : '<p class="small">Attente du lancement par l\'hôte...</p>'}
+                    </div>`;
+            },
+            attachEvents: (state) => {
+                const startButton = document.getElementById('start-button');
+                if (startButton) startButton.addEventListener('click', () => socket.emit('start_game', { token: state.token }));
+            }
+        },
+        intro: {
+            render: (state) => `
+                <div class="card">
+                    <h1>BRIEFING DE MISSION</h1>
+                    <p>Agents, votre mission est acceptée. Vous devez pirater le système en résolvant 5 énigmes pour obtenir le mot de passe final.</p>
+                    <div class="actions">
+                        <button id="start-enigme1-button" class="btn">Commencer l'énigme 1</button>
+                    </div>
+                </div>`,
+            attachEvents: (state) => {
+                document.getElementById('start-enigme1-button').addEventListener('click', () => {
+                    socket.emit('changer_vue', { token: state.token, vue: 'jeu1' });
+                });
+            }
+        },
+        indice1: {
+            render: (state) => `
+                <div class="card">
+                    <h1>Indice 1 Obtenu</h1>
+                    <p>Première lettre du mot de passe : <span class="badge">${state.indices_collectes[0]}</span></p>
+                    <div class="actions"><button class="btn" id="next-button">Énigme suivante</button></div>
+                </div>`,
+            attachEvents: (state) => {
+                document.getElementById('next-button').addEventListener('click', () => {
+                    socket.emit('changer_vue', { token: state.token, vue: 'jeu2' });
+                });
+            }
+        },
+        fail: {
+            render: () => `
+                <div class="card">
+                    <h1>MISSION ÉCHOUÉE</h1>
+                    <p class="small">Le système n'a pas pu être arrêté à temps.</p>
+                    <div class="actions"><button class="btn" id="restart-button">Recommencer</button></div>
+                </div>`,
+            attachEvents: () => {
+                 document.getElementById('restart-button').addEventListener('click', () => window.location.reload());
+            }
+        }
+    };
+    
+    // Affichage initial de l'accueil
+    gameContainer.innerHTML = views.accueil.render();
+    views.accueil.attachEvents();
 
-    function genererClavier() {
-        // On nettoie le conteneur au cas où
-        clavierContainer.innerHTML = '';
-        // On crée une touche pour chaque lettre de l'alphabet
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('').forEach(lettre => {
-            const touche = document.createElement('button');
-            touche.textContent = lettre;
-            touche.dataset.lettre = lettre; // On stocke la lettre dans un attribut data-*
-            touche.classList.add('touche-clavier');
-            
-            // On ajoute un écouteur d'événement sur chaque touche
-            touche.addEventListener('click', () => {
-                // Quand on clique, on envoie la lettre au serveur
-                socket.emit('proposer_lettre', { lettre: lettre });
-            });
-            clavierContainer.appendChild(touche);
-        });
-    }
+    socket.on('connect', () => { monSid = socket.id; });
+    socket.on('room_update', (roomState) => {
+        maRoomState = roomState;
+        let view = views[roomState.vue_actuelle];
+        // If not in base views, try modular views
+        if (!view && window.views && window.views[roomState.vue_actuelle]) {
+            view = window.views[roomState.vue_actuelle];
+        }
+        if (view) {
+            gameContainer.innerHTML = view.render(roomState);
+            if (typeof view.attachEvents === 'function') {
+                view.attachEvents(roomState);
+            }
+        }
+    });
+    socket.on('error', (data) => alert(`Erreur : ${data.message}`));
+
+// Expose socket and monSid for modular views
+window.socket = socket;
+window.monSid = monSid;
 });
+
