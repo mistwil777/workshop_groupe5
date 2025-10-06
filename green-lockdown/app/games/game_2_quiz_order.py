@@ -10,7 +10,8 @@ def create_state():
         'erreurs': [0, 0, 0, 0],  # Compteur d'erreurs par question
         'indices_aide': [False, False, False, False],  # Affichage de l'indice d'aide
         'indices_chiffres': [],  # Ajouté dynamiquement par le main
-        'code_final': ''         # Ajouté dynamiquement par le main
+        'code_final': '',        # Ajouté dynamiquement par le main
+        'indice': "Lis bien chaque question, les réponses sont souvent dans le texte ou dans tes connaissances sur l'environnement."
     }
 
 def handle_action(room, sid, action_data):
