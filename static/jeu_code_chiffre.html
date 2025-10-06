@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu 1 — Code Secret</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1 id="game-title">Chargement de la mission...</h1>
+      <p id="scenario-text"></p>
+      
+      <hr>
+      <p><strong>Règle du jeu :</strong><br>
+        <span id="ordering-rule" class="code"></span></p>
+      <hr>
+
+      <div id="symbol-container" class="symbol-container">
+        </div>
+
+      <p id="revealed-clues" class="small">Indices découverts : Aucun</p>
+
+      <div class="actions">
+        <input class="input" id="answer" placeholder="Code à 4 chiffres" maxlength="4">
+        <button class="btn" onclick="checkFinalCode()">Valider</button>
+      </div>
+      
+      <div id="toast" class="footer"></div>
+    </div>
+  </div>
+
+  <div id="quiz-modal" class="modal">
+    <div class="modal-content">
+      <h3 id="quiz-question">Question ?</h3>
+      <div id="quiz-options" class="quiz-options"></div>
+    </div>
+  </div>
+
+<script src="script.js"></script>
+<script>
+  // --- Éléments de la page ---
+  const gameTitle = document.getElementById('game-title');
+  const scenarioText = document.getElementById('scenario-text');
+  const orderingRule = document.getElementById('ordering-rule');
+  const symbolContainer = document.getElementById('symbol-container');
+  const answerInput = document.getElementById('answer');
+  const revealedCluesText = document.getElementById('revealed-clues');
+  const modal = document.getElementById('quiz-modal');
+  const quizQuestion = document.getElementById('quiz-question');
+  const quizOptions = document.getElementById('quiz-options');
+  
+  let currentScenario = {};
+  let discoveredClues = new Set();
+
+  // --- Initialisation du Jeu ---
+  async function initGame() {
+    const response = await fetch('scenarios.json');
+    const scenarios = await response.json();
+    
+    currentScenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+    
+    gameTitle.textContent = currentScenario.title;
+    scenarioText.textContent = currentScenario.scenarioText;
+    orderingRule.textContent = currentScenario.orderingRule;
+    
+    symbolContainer.innerHTML = '';
+    discoveredClues.clear(); // Réinitialise les indices découverts
+    revealedCluesText.textContent = 'Indices découverts : Aucun'; // Réinitialise le texte
+    answerInput.value = ''; // Vide le champ de réponse
+
+    currentScenario.forces.forEach(force => {
+      const symbolSpan = document.createElement('span');
+      symbolSpan.className = 'symbol';
+      symbolSpan.id = force.id;
+      symbolSpan.textContent = force.symbol;
+      symbolSpan.onclick = () => showQuiz(force);
+      symbolContainer.appendChild(symbolSpan);
+    });
+  }
+
+  // --- Logique du Quiz ---
+  function showQuiz(forceData) {
+    // CORRIGÉ : On vérifie si l'indice a déjà été découvert pour ne pas remontrer le quiz
+    if (discoveredClues.has(forceData.clueText)) {
+        toast('Vous avez déjà résolu cette énigme !', 'footer');
+        return;
+    }
+
+    quizQuestion.textContent = forceData.quiz.question;
+    quizOptions.innerHTML = '';
+
+    forceData.quiz.options.forEach(option => {
+      const button = document.createElement('button');
+      button.className = 'btn';
+      button.textContent = option;
+      button.onclick = () => checkQuizAnswer(option, forceData);
+      quizOptions.appendChild(button);
+    });
+    modal.style.display = "block";
+  }
+
+  function checkQuizAnswer(selectedOption, forceData) {
+    if (selectedOption === forceData.quiz.answer) {
+      // CORRIGÉ : On ajoute la bonne information (forceData.clueText) au set
+      discoveredClues.add(forceData.clueText);
+      
+      // CORRIGÉ : On affiche correctement tous les indices découverts
+      revealedCluesText.textContent = `Indices découverts : ${Array.from(discoveredClues).join(' | ')}`;
+      
+      toast('Bonne réponse ! Indice révélé.', 'footer correct');
+    } else {
+      toast('Mauvaise réponse, essayez encore.', 'footer wrong');
+    }
+    modal.style.display = "none";
+  }
+  
+  window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
+
+  // --- Fonction de vérification finale ---
+  function checkFinalCode() {
+    if (answerInput.value === currentScenario.secretCode) {
+      toast('Correct ✅ Mission accomplie !', 'footer correct');
+      setTimeout(() => { go('indice1.html'); }, 800);
+    } else {
+      toast('Mauvaise réponse ❌ Le code est incorrect.', 'footer wrong');
+      answerInput.value = '';
+    }
+  }
+
+  // --- Lancement du jeu au chargement de la page ---
+  document.addEventListener('DOMContentLoaded', initGame);
+</script>
+</body>
+</html>
