@@ -176,7 +176,7 @@ def handle_game_action(data):
             from games import game_2_quiz_order
             vue_change = game_2_quiz_order.handle_action(room, sid, action)
             if room['jeu2_state'].get('gagne'):
-                room['vue_actuelle'] = 'indice2'
+                room['vue_actuelle'] = 'success_jeu2'
                 if len(room['indices_collectes']) < 2:
                     room['indices_collectes'].append('E')
         # Jeu 3
