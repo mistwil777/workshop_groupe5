@@ -166,40 +166,71 @@ def handle_game_action(data):
         # Jeu 1
         if game == 'jeu1':
             vue_change = game_1_pendu.handle_action(room, sid, action)
-            if vue_change:
+            if room['jeu1_state'].get('gagne'):
+                if len(room['indices_collectes']) < 1:
+                    room['indices_collectes'].append('T')
+                room['vue_actuelle'] = 'success'
+                room['success_message'] = "Tu as réussi l'énigme 1 !"
+                room['success_next_vue'] = 'jeu2'
+                if 'last_failed_game' in room: del room['last_failed_game']
+            elif vue_change == 'fail':
+                room['vue_actuelle'] = 'fail'
+                room['last_failed_game'] = 'jeu1'
+            elif vue_change:
                 room['vue_actuelle'] = vue_change
-            # Si victoire, on s'assure que l'indice est bien ajouté
-            if room['jeu1_state'].get('gagne') and len(room['indices_collectes']) < 1:
-                room['indices_collectes'].append('T')
         # Jeu 2
         elif game == 'jeu2':
             from games import game_2_quiz_order
             vue_change = game_2_quiz_order.handle_action(room, sid, action)
             if room['jeu2_state'].get('gagne'):
-                room['vue_actuelle'] = 'success_jeu2'
                 if len(room['indices_collectes']) < 2:
                     room['indices_collectes'].append('E')
+                room['vue_actuelle'] = 'success'
+                room['success_message'] = "Tu as réussi l'énigme 2 !"
+                room['success_next_vue'] = 'jeu3'
+                if 'last_failed_game' in room: del room['last_failed_game']
+            elif vue_change == 'fail':
+                room['vue_actuelle'] = 'fail'
+                room['last_failed_game'] = 'jeu2'
         # Jeu 3
         elif game == 'jeu3':
             game_3_code.handle_action(room, sid, action)
             if room['jeu3_state'].get('gagne'):
-                room['vue_actuelle'] = 'indice3'
                 if len(room['indices_collectes']) < 3:
                     room['indices_collectes'].append('R')
+                room['vue_actuelle'] = 'success'
+                room['success_message'] = "Tu as réussi l'énigme 3 !"
+                room['success_next_vue'] = 'jeu4'
+                if 'last_failed_game' in room: del room['last_failed_game']
+            elif room['jeu3_state'].get('partie_terminee') and not room['jeu3_state'].get('gagne'):
+                room['vue_actuelle'] = 'fail'
+                room['last_failed_game'] = 'jeu3'
         # Jeu 4
         elif game == 'jeu4':
             game_4_text.handle_action(room, sid, action)
             if room['jeu4_state'].get('gagne'):
-                room['vue_actuelle'] = 'indice4'
                 if len(room['indices_collectes']) < 4:
                     room['indices_collectes'].append('R')
+                room['vue_actuelle'] = 'success'
+                room['success_message'] = "Tu as réussi l'énigme 4 !"
+                room['success_next_vue'] = 'jeu5'
+                if 'last_failed_game' in room: del room['last_failed_game']
+            elif room['jeu4_state'].get('partie_terminee') and not room['jeu4_state'].get('gagne'):
+                room['vue_actuelle'] = 'fail'
+                room['last_failed_game'] = 'jeu4'
         # Jeu 5
         elif game == 'jeu5':
             game_5_quiz.handle_action(room, sid, action)
             if room['jeu5_state'].get('gagne'):
-                room['vue_actuelle'] = 'indice5'
                 if len(room['indices_collectes']) < 5:
                     room['indices_collectes'].append('E')
+                room['vue_actuelle'] = 'success'
+                room['success_message'] = "Tu as réussi l'énigme 5 !"
+                room['success_next_vue'] = 'final'
+                if 'last_failed_game' in room: del room['last_failed_game']
+            elif room['jeu5_state'].get('partie_terminee') and not room['jeu5_state'].get('gagne'):
+                room['vue_actuelle'] = 'fail'
+                room['last_failed_game'] = 'jeu5'
         # Écran final : saisie du mot de passe
         elif game == 'final':
             mot = str(action.get('password', '')).strip().upper()
@@ -207,6 +238,10 @@ def handle_game_action(data):
             if mot == 'TERRE':
                 room['final_state']['gagne'] = True
                 room['vue_actuelle'] = 'success'
+                if 'last_failed_game' in room: del room['last_failed_game']
+            else:
+                room['vue_actuelle'] = 'fail'
+                room['last_failed_game'] = 'final'
         emit('room_update', room, to=token)
 
 if __name__ == '__main__':
