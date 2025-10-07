@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape Game — Mission Environnement</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>Escape Game</h1>
+            <h2>🌍 Mission Environnement</h2>
+            <p>
+                Bienvenue, agent. Une série de défis vous attend pour déjouer une catastrophe écologique imminente.
+                Chaque épreuve résolue vous donnera un indice crucial. Commencez votre mission !
+            </p>
+            <hr>
+            <div class="grid">
+                <a href="{{ url_for('static', filename='jeu_code_chiffre.html') }}" class="btn">
+                    Jeu 1 — Code Secret
+                </a>
+                <a href="{{ url_for('static', filename='jeu4.html') }}" class="btn">
+                    Jeu 4 — Mots Mêlés
+                </a>
+                </div>
+        </div>
+    </div>
+</body>
+</html>
