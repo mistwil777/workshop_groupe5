@@ -1,0 +1,62 @@
+[
+  {
+    "title": "La Marée de Plastique",
+    "scenarioText": "Alerte, agent ! Le gyre plastique du Pacifique a atteint une taille critique. Vous devez activer le drone 'Nettoyeur Sonique v3' pour désintégrer les micro-plastiques. Le drone requiert un code de calibrage à 4 fréquences.",
+    "orderingRule": "Le code s'obtient en classant les plastiques du plus rapide au plus lent à se décomposer dans la nature.",
+    "secretCode": "9156",
+    "forces": [
+      { "id": "pet", "symbol": "🧴", "clueText": "PET = 1", "quiz": { "question": "Le plastique PET (1) est le plus souvent utilisé pour fabriquer...", "options": ["Des sacs de caisse", "Des bouteilles d'eau", "Des pare-chocs de voiture"], "answer": "Des bouteilles d'eau" }},
+      { "id": "micro", "symbol": "🧼", "clueText": "Microplastiques = 5", "quiz": { "question": "Une source majeure de microplastiques dans les océans provient...", "options": ["Des emballages alimentaires", "Du lavage des textiles synthétiques", "Des marées noires"], "answer": "Du lavage des textiles synthétiques" }},
+      { "id": "nylon", "symbol": "🕸️", "clueText": "Filet de pêche = 6", "quiz": { "question": "Les 'filets fantômes' abandonnés en mer sont le plus souvent en...", "options": ["Coton", "Nylon", "Polypropylène"], "answer": "Nylon" }},
+      { "id": "bio", "symbol": "🌽", "clueText": "Bioplastique = 9", "quiz": { "question": "Les bioplastiques compostables sont souvent fabriqués à partir de...", "options": ["Pétrole raffiné", "Amidon de maïs", "Verre recyclé"], "answer": "Amidon de maïs" }}
+    ]
+  },
+  {
+    "title": "Opération Reforestation",
+    "scenarioText": "Catastrophe en Amazonie ! Une déforestation illégale massive a été détectée. Lancez la contre-mesure 'Pluie de Graines' en activant le satellite avec son code de déploiement à 4 chiffres.",
+    "orderingRule": "Le code suit la structure de la forêt, du plus profond sous terre jusqu'au processus dans les feuilles.",
+    "secretCode": "8742",
+    "forces": [
+      { "id": "mycelium", "symbol": "🍄", "clueText": "Mycélium = 8", "quiz": { "question": "Quel réseau souterrain permet aux arbres de communiquer et de s'échanger des nutriments ?", "options": ["Les racines profondes", "Le Mycélium", "Les galeries de vers"], "answer": "Le Mycélium" }},
+      { "id": "canopee", "symbol": "🌿", "clueText": "Canopée = 4", "quiz": { "question": "Comment nomme-t-on l'étage supérieur de la forêt, formé par la cime des arbres ?", "options": ["Le sous-bois", "L'humus", "La canopée"], "answer": "La canopée" }},
+      { "id": "photosynthese", "symbol": "🍃", "clueText": "Photosynthèse = 2", "quiz": { "question": "Lors de la photosynthèse, quel gaz la plante absorbe-t-elle principalement ?", "options": ["Oxygène", "Azote", "Dioxyde de carbone (CO2)"], "answer": "Dioxyde de carbone (CO2)" }},
+      { "id": "acajou", "symbol": "🪵", "clueText": "Acajou = 7", "quiz": { "question": "L'Acajou est un bois précieux souvent ciblé par...", "options": ["La déforestation légale", "Le trafic illégal", "Les feux de forêt"], "answer": "Le trafic illégal" }}
+    ]
+  },
+  {
+    "title": "Blackout Énergétique",
+    "scenarioText": "Blackout total sur la ville ! Le réseau, surchargé par les centrales à charbon, s'est effondré. Redémarrez-le en utilisant les sources d'énergie propre via le code de synchronisation à 4 chiffres.",
+    "orderingRule": "Le code doit entrer les sources d'énergie de la plus intermittente (météo-dépendante) à la plus constante.",
+    "secretCode": "5389",
+    "forces": [
+      { "id": "solaire", "symbol": "☀️", "clueText": "Solaire = 3", "quiz": { "question": "Que convertissent les panneaux photovoltaïques en électricité ?", "options": ["La chaleur du soleil", "La lumière du soleil", "Le vent solaire"], "answer": "La lumière du soleil" }},
+      { "id": "eolien", "symbol": "💨", "clueText": "Éolien = 5", "quiz": { "question": "L'énergie éolienne est la conversion de l'énergie cinétique du vent en...", "options": ["Énergie thermique", "Énergie potentielle", "Énergie électrique"], "answer": "Énergie électrique" }},
+      { "id": "hydraulique", "symbol": "💧", "clueText": "Hydraulique = 8", "quiz": { "question": "L'énergie hydraulique est principalement générée par...", "options": ["Les vagues de l'océan", "Les barrages sur les cours d'eau", "La fonte des glaciers"], "answer": "Les barrages sur les cours d'eau" }},
+      { "id": "geothermie", "symbol": "🌋", "clueText": "Géothermie = 9", "quiz": { "question": "L'énergie géothermique exploite la chaleur provenant...", "options": ["Du noyau de la Terre", "Des éruptions volcaniques", "De la friction des plaques"], "answer": "Du noyau de la Terre" }}
+    ]
+  },
+  {
+    "title": "Sauvetage des Pollinisateurs",
+    "scenarioText": "Alerte, une colonie d'abeilles s'est effondrée à cause des pesticides. Déverrouillez le coffre du laboratoire contenant le 'Bio-Protect 8', un traitement alternatif, avec son code à 4 chiffres.",
+    "orderingRule": "Le code suit l'histoire de la crise : la cause agricole, le poison, le processus menacé, et la solution.",
+    "secretCode": "7410",
+    "forces": [
+      { "id": "monoculture", "symbol": "🌽", "clueText": "Monoculture = 7", "quiz": { "question": "La monoculture intensive est un problème car elle...", "options": ["Réduit la biodiversité", "Augmente le besoin en eau", "Les deux"], "answer": "Les deux" }},
+      { "id": "neonic", "symbol": "☠️", "clueText": "Néonicotinoïdes = 4", "quiz": { "question": "Les néonicotinoïdes sont des pesticides qui attaquent le système... des insectes.", "options": ["Digestif", "Nerveux", "Reproducteur"], "answer": "Nerveux" }},
+      { "id": "pollinisation", "symbol": "🐝", "clueText": "Pollinisation = 1", "quiz": { "question": "La pollinisation est essentielle pour la... des plantes à fleurs.", "options": ["Respiration", "Reproduction", "Croissance"], "answer": "Reproduction" }},
+      { "id": "pheromones", "symbol": "🦋", "clueText": "Phéromones = 0", "quiz": { "question": "En agriculture, les phéromones peuvent être utilisées pour... les insectes nuisibles.", "options": ["Tuer", "Stériliser", "Piéger ou perturber"], "answer": "Piéger ou perturber" }}
+    ]
+  },
+  {
+    "title": "Urgence à la Station Polaire",
+    "scenarioText": "SOS de la station polaire 'Cryo-7' ! Une panne menace d'effacer 50 ans de données climatiques. Rebooter le système de transmission avec le code de secours à 4 chiffres avant la surchauffe.",
+    "orderingRule": "Le protocole est chronologique : le phénomène physique, l'organisation qui alerte, le gaz piégé, et la conséquence pour les océans.",
+    "secretCode": "6283",
+    "forces": [
+      { "id": "albedo", "symbol": "🧊", "clueText": "Effet Albédo = 6", "quiz": { "question": "La fonte de la banquise réduit l'effet albédo, ce qui...", "options": ["Refroidit l'océan", "Accélère le réchauffement", "N'a pas d'impact"], "answer": "Accélère le réchauffement" }},
+      { "id": "giec", "symbol": "🌐", "clueText": "GIEC = 2", "quiz": { "question": "Le GIEC est le groupe d'experts de l'ONU qui...", "options": ["Régule les émissions de CO2", "Évalue la science du climat", "Finance les énergies vertes"], "answer": "Évalue la science du climat" }},
+      { "id": "methane", "symbol": "💨", "clueText": "Méthane = 8", "quiz": { "question": "Le dégel du permafrost libère du méthane, un gaz à effet de serre... que le CO2.", "options": ["Moins puissant", "Aussi puissant", "Plus puissant"], "answer": "Plus puissant" }},
+      { "id": "acidification", "symbol": "🐚", "clueText": "Acidification = 3", "quiz": { "question": "L'acidification des océans menace surtout les organismes...", "options": ["À coquille ou squelette calcaire", "Vivant en grande profondeur", "Bioluminescents"], "answer": "À coquille ou squelette calcaire" }}
+    ]
+  }
+]
