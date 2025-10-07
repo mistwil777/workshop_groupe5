@@ -1,6 +1,12 @@
 def create_state():
     """Retourne l'état initial pour le jeu du pendu."""
-    mot = list("RECYCLAGE")
+    import json
+    import random
+    with open('app/data/enigmes.json', encoding='utf-8') as f:
+        data = json.load(f)
+    mots = data.get('pendu_mots', ["recyclage"])
+    mot_choisi = random.choice(mots).upper()
+    mot = list(mot_choisi)
     return {
         'mot_a_deviner': mot,
         'mot_affiche': ['_' for _ in mot],
@@ -9,7 +15,8 @@ def create_state():
         'max_erreurs': 6,
         'partie_terminee': False,
         'gagne': False,
-        'operateur_sid': None
+        'operateur_sid': None,
+        'indice': f"Ce mot est lié à l'environnement. Il commence par '{mot[0]}' et contient {len(mot)} lettres."
     }
 
 def handle_action(room, sid, action_data):
@@ -30,7 +37,7 @@ def handle_action(room, sid, action_data):
             if '_' not in game_state['mot_affiche']:
                 game_state['partie_terminee'] = True
                 game_state['gagne'] = True
-                vue_change = 'jeu2'
+                vue_change = 'indice1'
                 if 'T' not in room['indices_collectes']:
                     room['indices_collectes'].append('T')
             elif game_state['erreurs'] >= game_state['max_erreurs']:
