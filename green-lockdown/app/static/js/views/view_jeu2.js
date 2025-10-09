@@ -59,7 +59,7 @@ window.views.jeu2 = {
                 <hr>
                 <div class="code-section">
                     <p class="small">Une fois les 4 chiffres trouvés, entrez le code dans l'ordre de leur apparition.</p>
-                    <input id="final-code" class="input" maxlength="${scenario.forces.length}" placeholder="Code final attendu : ${codeFinalAttendu}" ${tousIndicesTrouves ? '' : 'disabled'}>
+                    <input id="final-code" class="input" maxlength="${scenario.forces.length}" placeholder="Code à 5 chiffres" >
                     <button id="submit-code" class="btn" ${tousIndicesTrouves ? '' : 'disabled'}>Valider le code</button>
                     <div class="code-feedback">${jeu2.gagne ? '<span class="correct">Bravo ! Code correct.</span>' : (jeu2.code_propose && !jeu2.gagne ? '<span class="wrong">Code incorrect.</span>' : '')}</div>
                 </div>

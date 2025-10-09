@@ -222,9 +222,39 @@ document.addEventListener('DOMContentLoaded', () => {
         fail: { render: () => { ClockManager.stopClocks(); AudioHandler.playDefeatSound(); return `<div class="card"><h1>MISSION ÉCHOUÉE</h1><p class="small">Le système n'a pas pu être arrêté à temps.</p><div class="actions"><button class="btn" id="restart-button">Retour au salon</button></div></div>`; }, attachEvents: (state) => { document.getElementById('restart-button').addEventListener('click', () => socket.emit('changer_vue', { token: state.token, vue: 'lobby' })); }},
     });
 
+    
+            // --- NOUVELLE FONCTION POUR METTRE À JOUR LE SUIVI DU MOT DE PASSE ---
+    function updatePasswordTracker(state) {
+        const tracker = document.getElementById('password-tracker');
+        if (!tracker) return;
+
+        const collectedIndices = state.indices_collectes || [];
+        const finalWordLength = state.final_state ? state.final_state.mot_final.length : 5;
+        
+        tracker.innerHTML = ''; // On vide l'affichage précédent
+
+        for (let i = 0; i < finalWordLength; i++) {
+            const slot = document.createElement('div');
+            slot.classList.add('password-slot');
+
+            if (i < collectedIndices.length) {
+                // Cette lettre a été débloquée
+                slot.textContent = collectedIndices[i];
+                slot.classList.add('unlocked');
+            } else {
+                // Cette lettre est encore verrouillée
+                slot.textContent = '🔒';
+                slot.classList.add('locked');
+            }
+            tracker.appendChild(slot);
+        }
+    }
+
     // --- FONCTION DE RENDU PRINCIPALE ---
     function renderApp(roomState) {
         maRoomState = roomState;
+        // --- NOUVELLE LIGNE AJOUTÉE ICI ---
+        updatePasswordTracker(roomState); // Met à jour les cadenas à chaque fois
         ClockManager.detectJeuChange(roomState);
         const view = window.views[roomState.vue_actuelle];
         if (view && typeof view.render === 'function') { // Sécurité supplémentaire

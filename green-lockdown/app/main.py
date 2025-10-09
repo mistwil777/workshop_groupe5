@@ -28,15 +28,12 @@ with open('app/data/enigmes.json', encoding='utf-8') as f:
 def create_game_state(niveau='college'):
     """Crée un nouvel objet d'état complet pour une partie."""
     
-    # --- CORRECTION POUR LE JEU 1 (PENDU) ---
-    # 1. On charge la section "pendu_mots" du JSON
+    # --- Logique pour le Jeu 1 (Pendu) ---
     pendu_data = ENIGMES_QUIZ_ORDER.get('pendu_mots', {})
-    # 2. On sélectionne le bon niveau (ex: "primaire", "college"...)
     pendu_niveau_data = pendu_data.get(niveau, pendu_data.get('college', {}))
-    # 3. On récupère la LISTE de mots finale
     mots_pour_pendu = pendu_niveau_data.get('mots', ['DEFAULT'])
     
-    # --- Logique pour le Jeu 2 (ne change pas, mais reste nécessaire) ---
+    # --- Logique pour le Jeu 2 (Défi des Forces) ---
     scenarios = ENIGMES_QUIZ_ORDER.get(niveau, ENIGMES_QUIZ_ORDER.get('college', []))
     scenario = random.choice(scenarios) if scenarios else None
     jeu2_state = game_2_quiz_order.create_state()
@@ -45,20 +42,24 @@ def create_game_state(niveau='college'):
         nb_questions = len(scenario.get('forces', []))
         indices_chiffres = random.sample([str(i) for i in range(10)], nb_questions)
         jeu2_state['indices_chiffres'] = indices_chiffres
+    
+    # --- CORRECTION : Choix d'un mot final aléatoire ---
+    mots_finaux = ENIGMES_QUIZ_ORDER.get('mots_finaux', ['TERRE'])
+    mot_final_choisi = random.choice(mots_finaux)
 
     return {
         'vue_actuelle': 'lobby', 'joueurs': {}, 'host_sid': None, 'token': None,
         'niveau': niveau, 'indices_collectes': [],
-        'pendu_mots_data': pendu_data, # On stocke toutes les données pour les restarts
+        'pendu_mots_data': pendu_data,
         
-        # 4. On passe la bonne liste de mots au cerveau du jeu 1
         'jeu1_state': game_1_pendu.create_state(niveau, mots_pour_pendu),
-        
         'jeu2_state': jeu2_state,
         'jeu3_state': game_3_code.create_state(niveau),
         'jeu4_state': game_4_text.create_state(niveau),
         'jeu5_state': game_5_quiz.create_state(niveau),
-        'final_state': {'mot_final': 'TERRE', 'propose': '', 'gagne': False}
+        
+        # Le mot final est maintenant dynamique
+        'final_state': {'mot_final': mot_final_choisi, 'propose': '', 'gagne': False}
     }
 
 def generate_token():
@@ -164,7 +165,6 @@ def handle_start_game(data):
 
 # --- Gestion générique des actions de jeu (modulaire) ---
 
-# --- Gestion générique des actions de jeu (modulaire) ---
 @socketio.on('game_action')
 def handle_game_action(data):
     sid = request.sid
@@ -174,57 +174,56 @@ def handle_game_action(data):
     if token in rooms:
         room = rooms[token]
         
+        mot_final = room['final_state']['mot_final']
+        
+        # CORRECTION : On gère chaque jeu individuellement pour être sûr
+        # de collecter la bonne lettre et d'aller à la bonne vue.
+        
         if game == 'jeu1':
-            # On demande au cerveau du jeu de mettre à jour l'état
             game_1_pendu.handle_action(room, sid, action)
-            
-            # CORRECTION : C'est ici qu'on regarde si le jeu est gagné ou perdu
-            # et on décide de changer de vue.
             if room['jeu1_state'].get('gagne'):
-                room['vue_actuelle'] = 'indice1' # Va à l'écran d'indice
-                if 'T' not in room['indices_collectes']:
-                    room['indices_collectes'].append('T')
+                room['vue_actuelle'] = 'indice1' # Redirige vers la vue INDICE 1
+                # On s'assure que la liste des indices a la bonne taille avant d'ajouter
+                if len(room['indices_collectes']) == 0:
+                    room['indices_collectes'].append(mot_final[0])
             elif room['jeu1_state'].get('defaite'):
-                room['vue_actuelle'] = 'fail' # Va à l'écran de défaite
-        # Jeu 2
+                room['vue_actuelle'] = 'fail'
+        
         elif game == 'jeu2':
-            from games import game_2_quiz_order
-            # La logique du jeu reste la même
             game_2_quiz_order.handle_action(room, sid, action)
-            
-            # CORRECTION : En cas de victoire, on va à l'écran 'indice2'
             if room['jeu2_state'].get('gagne'):
-                room['vue_actuelle'] = 'indice2' # On utilise la vue gérée par script.js
-                if 'E' not in room['indices_collectes']:
-                    room['indices_collectes'].append('E')
-        # Jeu 3
+                room['vue_actuelle'] = 'indice2' # Redirige vers la vue INDICE 2
+                if len(room['indices_collectes']) == 1:
+                    room['indices_collectes'].append(mot_final[1])
+
         elif game == 'jeu3':
             game_3_code.handle_action(room, sid, action)
             if room['jeu3_state'].get('gagne'):
-                room['vue_actuelle'] = 'indice3'
-                if len(room['indices_collectes']) < 3:
-                    room['indices_collectes'].append('R')
-        # Jeu 4
+                room['vue_actuelle'] = 'indice3' # Redirige vers la vue INDICE 3
+                if len(room['indices_collectes']) == 2:
+                    room['indices_collectes'].append(mot_final[2])
+
         elif game == 'jeu4':
             game_4_text.handle_action(room, sid, action)
             if room['jeu4_state'].get('gagne'):
-                room['vue_actuelle'] = 'indice4'
-                if len(room['indices_collectes']) < 4:
-                    room['indices_collectes'].append('R')
-        # Jeu 5
+                room['vue_actuelle'] = 'indice4' # Redirige vers la vue INDICE 4
+                if len(room['indices_collectes']) == 3:
+                    room['indices_collectes'].append(mot_final[3])
+
         elif game == 'jeu5':
             game_5_quiz.handle_action(room, sid, action)
             if room['jeu5_state'].get('gagne'):
-                room['vue_actuelle'] = 'indice5'
-                if len(room['indices_collectes']) < 5:
-                    room['indices_collectes'].append('E')
-        # Écran final : saisie du mot de passe
+                room['vue_actuelle'] = 'indice5' # Redirige vers la vue INDICE 5
+                if len(room['indices_collectes']) == 4:
+                    room['indices_collectes'].append(mot_final[4])
+
         elif game == 'final':
-            mot = str(action.get('password', '')).strip().upper()
-            room['final_state']['propose'] = mot
-            if mot == 'TERRE':
+            mot_propose = str(action.get('password', '')).strip().upper()
+            room['final_state']['propose'] = mot_propose
+            if mot_propose == mot_final:
                 room['final_state']['gagne'] = True
                 room['vue_actuelle'] = 'success'
+                
         emit('room_update', room, to=token)
 
 if __name__ == '__main__':
