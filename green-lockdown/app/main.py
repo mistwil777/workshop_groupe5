@@ -27,17 +27,22 @@ with open('app/data/enigmes.json', encoding='utf-8') as f:
 
 def create_game_state(niveau='college'):
     """Crée un nouvel objet d'état complet pour une partie."""
-    # ENIGMES_QUIZ_ORDER est maintenant un dict par niveau
+    
+    # --- Logique pour le Jeu 1 (Pendu) ---
+    pendu_data = ENIGMES_QUIZ_ORDER.get('pendu_data', {})
+    pendu_niveau_data = pendu_data.get(niveau, pendu_data.get('college', {}))
+    mots_pour_pendu = pendu_niveau_data.get('mots', ['DEFAULT'])
+    
+    # --- Logique pour le Jeu 2 (Quiz à ordonner) ---
     scenarios = ENIGMES_QUIZ_ORDER.get(niveau, ENIGMES_QUIZ_ORDER.get('college', []))
     scenario = random.choice(scenarios) if scenarios else None
     jeu2_state = game_2_quiz_order.create_state()
     jeu2_state['scenario'] = scenario
-    # Génération dynamique des indices (chiffres) et du code à deviner
-    nb_questions = len(scenario['forces']) if scenario else 4
-    indices_chiffres = [str(random.randint(0, 9)) for _ in range(nb_questions)]
-    code_final = ''.join(indices_chiffres)
-    jeu2_state['indices_chiffres'] = indices_chiffres
-    jeu2_state['code_final'] = code_final
+    if scenario:
+        nb_questions = len(scenario['forces'])
+        indices_chiffres = random.sample([str(i) for i in range(10)], nb_questions)
+        jeu2_state['indices_chiffres'] = indices_chiffres
+
     return {
         'vue_actuelle': 'lobby',
         'joueurs': {},
@@ -45,7 +50,11 @@ def create_game_state(niveau='college'):
         'token': None,
         'niveau': niveau,
         'indices_collectes': [],
-        'jeu1_state': game_1_pendu.create_state(),
+        'pendu_mots_data': pendu_data, # On stocke les données pour le restart
+        
+        # CORRECTION : On passe la bonne liste de mots à la création du jeu 1
+        'jeu1_state': game_1_pendu.create_state(niveau, mots_pour_pendu),
+        
         'jeu2_state': jeu2_state,
         'jeu3_state': game_3_code.create_state(niveau),
         'jeu4_state': game_4_text.create_state(niveau),

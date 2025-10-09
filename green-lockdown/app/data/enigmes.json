@@ -40,7 +40,18 @@
     }
   ]
   ,
-  "pendu_mots": [
-    "recyclage", "biodiversite", "pollution", "compost", "dechet", "energie", "solaire", "eolienne", "hydraulique", "tri", "durable", "foret", "oceans", "climat", "planete", "faune", "flore", "humus", "plastique", "verre", "papier", "carton", "metal", "gaspillage", "nature", "protection", "renouvelable", "carbone", "empreinte", "ecologie", "arbre", "rivière", "maree", "inondation", "secheresse", "canicule", "deforestation", "rechauffement", "glacier", "banquise", "ozone", "atmosphere", "composteur", "engrais", "pesticide", "agriculture", "abeille", "fleur", "herbivore", "carnivore", "omnivore"
-  ]
+  "pendu_data": {
+    "primaire": {
+      "title": "Mission Forêt Magique",
+      "mots": [ "eau","air","sol","bois","nid","mer","gaz","vent","vie","feu" ]
+    },
+    "college": {
+      "title": "Sauver la centrale solaire",
+      "mots": [ "tri","dechet","papier","verre","carton","energie","solaire","eolienne","durable","ecologie","recyclage","nature","foret","faune","flore","compost","gaspillage","carbone","pollution","protection"]
+    },
+    "lycee": {
+      "title": "Sécuriser le barrage hydroélectrique",
+      "mots": ["hydraulique","renouvelable","biodiversite","empreinte","deforestation","rechauffement","atmosphere","banquise","glacier","inondation","secheresse","canicule","ozone","agriculture","pesticide","engrais","composteur","rivière","maree","planete"]
+    }
+  }
 }
