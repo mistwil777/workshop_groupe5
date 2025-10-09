@@ -40,57 +40,7 @@ window.views.success = {
         `;
     },
     attachEvents: () => {
-        // Confettis animés
-        function launchConfetti() {
-            const canvas = document.getElementById('confetti-canvas');
-            if (!canvas) return;
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            const ctx = canvas.getContext('2d');
-            const confs = [];
-            const colors = ['#b6ff00','#00e6e6','#ffe066','#ff5e5e','#fff'];
-            for(let i=0;i<120;i++){
-                confs.push({
-                    x: Math.random()*canvas.width,
-                    y: Math.random()*-canvas.height,
-                    r: 6+Math.random()*10,
-                    d: 2+Math.random()*2,
-                    color: colors[Math.floor(Math.random()*colors.length)],
-                    tilt: Math.random()*10-5,
-                    tiltAngle: 0,
-                    tiltAngleInc: 0.02+Math.random()*0.04
-                });
-            }
-            function draw(){
-                ctx.clearRect(0,0,canvas.width,canvas.height);
-                for(const c of confs){
-                    ctx.beginPath();
-                    ctx.ellipse(c.x,c.y,c.r,c.r/2, c.tilt,0,2*Math.PI);
-                    ctx.fillStyle = c.color;
-                    ctx.globalAlpha = 0.85;
-                    ctx.fill();
-                }
-            }
-            function update(){
-                for(const c of confs){
-                    c.y += c.d;
-                    c.x += Math.sin(c.tilt)*2;
-                    c.tilt += c.tiltAngleInc;
-                    if(c.y>canvas.height+20){c.y = -10; c.x=Math.random()*canvas.width;}
-                }
-            }
-            let frame=0;
-            function loop(){
-                draw();
-                update();
-                frame++;
-                if(frame<400) requestAnimationFrame(loop);
-                else ctx.clearRect(0,0,canvas.width,canvas.height);
-            }
-            loop();
-        }
-        setTimeout(launchConfetti, 200);
-        // Bouton restart
+        setTimeout(() => { if (window.lancerConfettis) lancerConfettis(); }, 200);
         const btn = document.getElementById('restart-button');
         if (btn) btn.onclick = () => window.location.reload();
     }

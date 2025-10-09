@@ -98,7 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
             this.bgMusic.loop = true;
             this.bgMusic.volume = 0.18;
             this.clickSound.volume = 0.7;
-            this.victorySound.volume = 0.5;
+            this.victorySound.volume = 0.3;
+            this.victoryInterSound.volume = 0.3;
             this.defeatSound.volume = 0.5;
             this.createMuteButton();
             
@@ -146,9 +147,65 @@ document.addEventListener('DOMContentLoaded', () => {
     // (Cette partie ne change pas)
     // =================================================================================
     function lancerConfettis() {
-        if (window.confetti) {
-            confetti({ particleCount: 150, spread: 180, origin: { y: 0.6 } });
+        // Crée un canvas plein écran temporaire
+        let canvas = document.getElementById('confetti-canvas');
+        if (!canvas) {
+            canvas = document.createElement('canvas');
+            canvas.id = 'confetti-canvas';
+            canvas.style.position = 'fixed';
+            canvas.style.top = 0;
+            canvas.style.left = 0;
+            canvas.style.width = '100vw';
+            canvas.style.height = '100vh';
+            canvas.style.pointerEvents = 'none';
+            canvas.style.zIndex = 2000;
+            document.body.appendChild(canvas);
         }
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const ctx = canvas.getContext('2d');
+        const confs = [];
+        const colors = ['#b6ff00','#00e6e6','#ffe066','#ff5e5e','#fff'];
+        for(let i=0;i<120;i++){
+            confs.push({
+                x: Math.random()*canvas.width,
+                y: Math.random()*-canvas.height,
+                r: 6+Math.random()*10,
+                d: 2+Math.random()*2,
+                color: colors[Math.floor(Math.random()*colors.length)],
+                tilt: Math.random()*10-5,
+                tiltAngle: 0,
+                tiltAngleInc: 0.02+Math.random()*0.04
+            });
+        }
+        function draw(){
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            for(const c of confs){
+                ctx.beginPath();
+                ctx.ellipse(c.x,c.y,c.r,c.r/2, c.tilt,0,2*Math.PI);
+                ctx.fillStyle = c.color;
+                ctx.globalAlpha = 0.85;
+                ctx.fill();
+            }
+        }
+        function update(){
+            for(const c of confs){
+                c.y += c.d;
+                c.x += Math.sin(c.tilt)*2;
+                c.tilt += c.tiltAngleInc;
+                if(c.y>canvas.height+20){c.y = -10; c.x=Math.random()*canvas.width;}
+            }
+        }
+        let frame=0;
+        function loop(){
+            draw();
+            update();
+            frame++;
+            if(frame<400) requestAnimationFrame(loop);
+            else ctx.clearRect(0,0,canvas.width,canvas.height);
+        }
+        loop();
+        setTimeout(() => { if (canvas.parentNode) canvas.parentNode.removeChild(canvas); }, 9000);
     }
 
     // =================================================================================
