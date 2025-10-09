@@ -27,17 +27,22 @@ with open('app/data/enigmes.json', encoding='utf-8') as f:
 
 def create_game_state(niveau='college'):
     """Crée un nouvel objet d'état complet pour une partie."""
-    # ENIGMES_QUIZ_ORDER est maintenant un dict par niveau
+    
+    # --- Logique pour le Jeu 1 (Pendu) ---
+    pendu_data = ENIGMES_QUIZ_ORDER.get('pendu_data', {})
+    pendu_niveau_data = pendu_data.get(niveau, pendu_data.get('college', {}))
+    mots_pour_pendu = pendu_niveau_data.get('mots', ['DEFAULT'])
+    
+    # --- Logique pour le Jeu 2 (Quiz à ordonner) ---
     scenarios = ENIGMES_QUIZ_ORDER.get(niveau, ENIGMES_QUIZ_ORDER.get('college', []))
     scenario = random.choice(scenarios) if scenarios else None
     jeu2_state = game_2_quiz_order.create_state()
     jeu2_state['scenario'] = scenario
-    # Génération dynamique des indices (chiffres) et du code à deviner
-    nb_questions = len(scenario['forces']) if scenario else 4
-    indices_chiffres = [str(random.randint(0, 9)) for _ in range(nb_questions)]
-    code_final = ''.join(indices_chiffres)
-    jeu2_state['indices_chiffres'] = indices_chiffres
-    jeu2_state['code_final'] = code_final
+    if scenario:
+        nb_questions = len(scenario['forces'])
+        indices_chiffres = random.sample([str(i) for i in range(10)], nb_questions)
+        jeu2_state['indices_chiffres'] = indices_chiffres
+
     return {
         'vue_actuelle': 'lobby',
         'joueurs': {},
@@ -45,7 +50,11 @@ def create_game_state(niveau='college'):
         'token': None,
         'niveau': niveau,
         'indices_collectes': [],
-        'jeu1_state': game_1_pendu.create_state(),
+        'pendu_mots_data': pendu_data, # On stocke les données pour le restart
+        
+        # CORRECTION : On passe la bonne liste de mots à la création du jeu 1
+        'jeu1_state': game_1_pendu.create_state(niveau, mots_pour_pendu),
+        
         'jeu2_state': jeu2_state,
         'jeu3_state': game_3_code.create_state(niveau),
         'jeu4_state': game_4_text.create_state(niveau),
@@ -142,11 +151,14 @@ def handle_start_game(data):
     if token in rooms and sid == rooms[token]['host_sid']:
         room = rooms[token]
         
-        # Si la partie a déjà eu lieu (ex: un indice a été collecté ou un jeu est terminé), on la réinitialise
         if room['indices_collectes'] or room['jeu1_state']['partie_terminee']:
              reset_game_progress(room)
 
         room['vue_actuelle'] = 'intro'
+        
+        # CORRECTION : On supprime la ligne qui assigne un opérateur unique.
+        # room['jeu1_state']['operateur_sid'] = list(room['joueurs'].keys())[0]
+
         print(f"La partie {token} est lancée par l'hôte.")
         emit('room_update', room, to=token)
 
@@ -162,28 +174,29 @@ def handle_game_action(data):
     action = data.get('action')
     if token in rooms:
         room = rooms[token]
-        vue_change = None
-        # Jeu 1
+        
         if game == 'jeu1':
-            vue_change = game_1_pendu.handle_action(room, sid, action)
+            # On demande au cerveau du jeu de mettre à jour l'état
+            game_1_pendu.handle_action(room, sid, action)
+            
+            # CORRECTION : C'est ici qu'on regarde si le jeu est gagné ou perdu
+            # et on décide de changer de vue.
             if room['jeu1_state'].get('gagne'):
-                if len(room['indices_collectes']) < 1:
+                room['vue_actuelle'] = 'indice1' # Va à l'écran d'indice
+                if 'T' not in room['indices_collectes']:
                     room['indices_collectes'].append('T')
-                room['vue_actuelle'] = 'success'
-                room['success_message'] = "Tu as réussi l'énigme 1 !"
-                room['success_next_vue'] = 'jeu2'
-                if 'last_failed_game' in room: del room['last_failed_game']
-            elif vue_change == 'fail':
-                room['vue_actuelle'] = 'fail'
-                room['last_failed_game'] = 'jeu1'
-            elif vue_change:
-                room['vue_actuelle'] = vue_change
+            elif room['jeu1_state'].get('defaite'):
+                room['vue_actuelle'] = 'fail' # Va à l'écran de défaite
         # Jeu 2
         elif game == 'jeu2':
             from games import game_2_quiz_order
-            vue_change = game_2_quiz_order.handle_action(room, sid, action)
+            # La logique du jeu reste la même
+            game_2_quiz_order.handle_action(room, sid, action)
+            
+            # CORRECTION : En cas de victoire, on va à l'écran 'indice2'
             if room['jeu2_state'].get('gagne'):
-                if len(room['indices_collectes']) < 2:
+                room['vue_actuelle'] = 'indice2' # On utilise la vue gérée par script.js
+                if 'E' not in room['indices_collectes']:
                     room['indices_collectes'].append('E')
                 room['vue_actuelle'] = 'success'
                 room['success_message'] = "Tu as réussi l'énigme 2 !"
