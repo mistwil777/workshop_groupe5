@@ -22,26 +22,35 @@ def create_state():
 def handle_action(room, sid, action_data):
     game_state = room['jeu1_state']
     action_type = action_data.get('type')
-    vue_change = None
+    
     if action_type == 'proposer_lettre':
         lettre = action_data.get('lettre', '').upper()
-        if not game_state['partie_terminee'] and sid == game_state['operateur_sid'] and lettre not in game_state['lettres_proposees']:
+        
+        # CORRECTION : On ne vérifie plus si c'est l'opérateur. Tout le monde peut jouer.
+        if not game_state['partie_terminee'] and lettre not in game_state['lettres_proposees']:
             game_state['lettres_proposees'].append(lettre)
+            
             if lettre in game_state['mot_a_deviner']:
                 for i, l in enumerate(game_state['mot_a_deviner']):
                     if l == lettre:
                         game_state['mot_affiche'][i] = l
             else:
                 game_state['erreurs'] += 1
-            # Vérification de victoire/défaite
+
+            # La logique de victoire/défaite met juste à jour l'état.
+            # C'est main.py qui décidera de changer de vue.
             if '_' not in game_state['mot_affiche']:
                 game_state['partie_terminee'] = True
                 game_state['gagne'] = True
-                vue_change = 'indice1'
-                if 'T' not in room['indices_collectes']:
-                    room['indices_collectes'].append('T')
             elif game_state['erreurs'] >= game_state['max_erreurs']:
                 game_state['partie_terminee'] = True
                 game_state['gagne'] = False
-                vue_change = 'fail'
-    return vue_change
+                game_state['defaite'] = True # On ajoute un état clair pour la défaite
+    
+    # CORRECTION : On ajoute la gestion du redémarrage ici.
+    elif action_type == 'restart':
+        # On recrée un nouvel état pour le jeu 1.
+        room['jeu1_state'] = create_state()
+
+    # CORRECTION : La fonction ne retourne plus rien.
+    return None

@@ -142,11 +142,14 @@ def handle_start_game(data):
     if token in rooms and sid == rooms[token]['host_sid']:
         room = rooms[token]
         
-        # Si la partie a déjà eu lieu (ex: un indice a été collecté ou un jeu est terminé), on la réinitialise
         if room['indices_collectes'] or room['jeu1_state']['partie_terminee']:
              reset_game_progress(room)
 
         room['vue_actuelle'] = 'intro'
+        
+        # CORRECTION : On supprime la ligne qui assigne un opérateur unique.
+        # room['jeu1_state']['operateur_sid'] = list(room['joueurs'].keys())[0]
+
         print(f"La partie {token} est lancée par l'hôte.")
         emit('room_update', room, to=token)
 
@@ -162,22 +165,29 @@ def handle_game_action(data):
     action = data.get('action')
     if token in rooms:
         room = rooms[token]
-        vue_change = None
-        # Jeu 1
+        
         if game == 'jeu1':
-            vue_change = game_1_pendu.handle_action(room, sid, action)
-            if vue_change:
-                room['vue_actuelle'] = vue_change
-            # Si victoire, on s'assure que l'indice est bien ajouté
-            if room['jeu1_state'].get('gagne') and len(room['indices_collectes']) < 1:
-                room['indices_collectes'].append('T')
+            # On demande au cerveau du jeu de mettre à jour l'état
+            game_1_pendu.handle_action(room, sid, action)
+            
+            # CORRECTION : C'est ici qu'on regarde si le jeu est gagné ou perdu
+            # et on décide de changer de vue.
+            if room['jeu1_state'].get('gagne'):
+                room['vue_actuelle'] = 'indice1' # Va à l'écran d'indice
+                if 'T' not in room['indices_collectes']:
+                    room['indices_collectes'].append('T')
+            elif room['jeu1_state'].get('defaite'):
+                room['vue_actuelle'] = 'fail' # Va à l'écran de défaite
         # Jeu 2
         elif game == 'jeu2':
             from games import game_2_quiz_order
-            vue_change = game_2_quiz_order.handle_action(room, sid, action)
+            # La logique du jeu reste la même
+            game_2_quiz_order.handle_action(room, sid, action)
+            
+            # CORRECTION : En cas de victoire, on va à l'écran 'indice2'
             if room['jeu2_state'].get('gagne'):
-                room['vue_actuelle'] = 'success_jeu2'
-                if len(room['indices_collectes']) < 2:
+                room['vue_actuelle'] = 'indice2' # On utilise la vue gérée par script.js
+                if 'E' not in room['indices_collectes']:
                     room['indices_collectes'].append('E')
         # Jeu 3
         elif game == 'jeu3':

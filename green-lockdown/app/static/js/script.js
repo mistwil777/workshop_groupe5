@@ -181,24 +181,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         },
+// NOUVEAU BLOC CENTRALISÉ POUR TOUS LES ÉCRANS D'INDICE
         indice1: {
-            render: (state) => `<div class="card"><h1>Bravo, énigme 1 réussie !</h1><p>Lettre du code&nbsp;: <span class="badge">${state.indices_collectes[0]}</span></p><div class="actions"><button class="btn" id="continue-button">Continuer</button></div></div>`,
+            render: (state) => `<div class="card"><h1>Bravo, énigme 1 réussie !</h1><p>Lettre du code&nbsp;: <span class="badge">${state.indices_collectes[0] || ''}</span></p><div class="actions"><button class="btn" id="continue-button">Continuer</button></div></div>`,
             attachEvents: (state) => {
-                lancerConfettis();
                 document.getElementById('continue-button').addEventListener('click', () => socket.emit('changer_vue', { token: state.token, vue: 'jeu2' }));
+                setTimeout(() => { if (window.lancerConfettis) lancerConfettis(); if (window.AudioHandler) AudioHandler.playVictorySound(); }, 50);
             }
         },
         indice2: {
             render: (state) => `<div class="card"><h1>Bravo, énigme 2 réussie !</h1><p>Lettre trouvée&nbsp;: <span class="badge">${state.indices_collectes[1] || ''}</span></p><div class="actions"><button class="btn" id="continue-button">Continuer</button></div></div>`,
             attachEvents: (state) => {
-                lancerConfettis();
                 document.getElementById('continue-button').addEventListener('click', () => socket.emit('changer_vue', { token: state.token, vue: 'jeu3' }));
+                setTimeout(() => { if (window.lancerConfettis) lancerConfettis(); if (window.AudioHandler) AudioHandler.playVictorySound(); }, 50);
             }
         },
-        // ... (Les autres vues indice3, 4, 5, final, success, fail restent les mêmes) ...
-        indice3: { render: (state) => `<div class="card"><h1>Bravo, énigme 3 réussie !</h1><p>Lettre trouvée&nbsp;: <span class="badge">${state.indices_collectes[2] || ''}</span></p><div class="actions"><button class="btn" id="continue-button">Continuer</button></div></div>`, attachEvents: (state) => { lancerConfettis(); document.getElementById('continue-button').addEventListener('click', () => socket.emit('changer_vue', { token: state.token, vue: 'jeu4' })); }},
-        indice4: { render: (state) => `<div class="card"><h1>Bravo, énigme 4 réussie !</h1><p>Lettre trouvée&nbsp;: <span class="badge">${state.indices_collectes[3] || ''}</span></p><div class="actions"><button class="btn" id="continue-button">Continuer</button></div></div>`, attachEvents: (state) => { lancerConfettis(); document.getElementById('continue-button').addEventListener('click', () => socket.emit('changer_vue', { token: state.token, vue: 'jeu5' })); }},
-        indice5: { render: (state) => `<div class="card"><h1>Bravo, énigme 5 réussie !</h1><p>Lettre trouvée&nbsp;: <span class="badge">${state.indices_collectes[4] || ''}</span></p><div class="actions"><button class="btn" id="continue-button">Continuer</button></div></div>`, attachEvents: (state) => { lancerConfettis(); document.getElementById('continue-button').addEventListener('click', () => socket.emit('changer_vue', { token: state.token, vue: 'final' })); }},
+        indice3: {
+            render: (state) => `<div class="card"><h1>Bravo, énigme 3 réussie !</h1><p>Lettre trouvée&nbsp;: <span class="badge">${state.indices_collectes[2] || ''}</span></p><div class="actions"><button class="btn" id="continue-button">Continuer</button></div></div>`,
+            attachEvents: (state) => {
+                document.getElementById('continue-button').addEventListener('click', () => socket.emit('changer_vue', { token: state.token, vue: 'jeu4' }));
+                setTimeout(() => { if (window.lancerConfettis) lancerConfettis(); if (window.AudioHandler) AudioHandler.playVictorySound(); }, 50);
+            }
+        },
+        indice4: {
+            render: (state) => `<div class="card"><h1>Bravo, énigme 4 réussie !</h1><p>Lettre trouvée&nbsp;: <span class="badge">${state.indices_collectes[3] || ''}</span></p><div class="actions"><button class="btn" id="continue-button">Continuer</button></div></div>`,
+            attachEvents: (state) => {
+                document.getElementById('continue-button').addEventListener('click', () => socket.emit('changer_vue', { token: state.token, vue: 'jeu5' }));
+                setTimeout(() => { if (window.lancerConfettis) lancerConfettis(); if (window.AudioHandler) AudioHandler.playVictorySound(); }, 50);
+            }
+        },
+        indice5: {
+            render: (state) => `<div class="card"><h1>Bravo, énigme 5 réussie !</h1><p>Lettre trouvée&nbsp;: <span class="badge">${state.indices_collectes[4] || ''}</span></p><div class="actions"><button class="btn" id="continue-button">Continuer</button></div></div>`,
+            attachEvents: (state) => {
+                document.getElementById('continue-button').addEventListener('click', () => socket.emit('changer_vue', { token: state.token, vue: 'final' }));
+                setTimeout(() => { if (window.lancerConfettis) lancerConfettis(); if (window.AudioHandler) AudioHandler.playVictorySound(); }, 50);
+            }
+        },
         final: { render: () => `<div class="card"><h1>Dernière Étape : Le Mot de Passe</h1><p>Entrez le mot de passe que vous avez collecté.</p><input id="password-input" class="input" placeholder="Mot de passe" maxlength="5"><button id="submit-password" class="btn">Valider</button></div>`, attachEvents: (state) => { document.getElementById('submit-password').addEventListener('click', () => { const mdp = document.getElementById('password-input').value; socket.emit('game_action', { token: state.token, game: 'final', action: { type: 'submit_password', password: mdp } }); }); }},
         success: { render: () => `<div class="card"><h1>MISSION ACCOMPLIE !</h1><p class="correct">Félicitations, vous avez sauvé la planète !</p><p>Temps total : ${ClockManager.formatTime(ClockManager.recap.global)}</p><div class="actions"><button class="btn" id="restart-button">Rejouer</button></div></div>`, attachEvents: () => { AudioHandler.playVictorySound(); lancerConfettis(); document.getElementById('restart-button').addEventListener('click', () => window.location.reload()); }},
         fail: { render: () => { ClockManager.stopClocks(); AudioHandler.playDefeatSound(); return `<div class="card"><h1>MISSION ÉCHOUÉE</h1><p class="small">Le système n'a pas pu être arrêté à temps.</p><div class="actions"><button class="btn" id="restart-button">Retour au salon</button></div></div>`; }, attachEvents: (state) => { document.getElementById('restart-button').addEventListener('click', () => socket.emit('changer_vue', { token: state.token, vue: 'lobby' })); }},
