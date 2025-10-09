@@ -1,42 +1,49 @@
 # app/games/game_3_code.py
-# Énigme 3 : Le Code Secret Partagé
-# Chaque joueur reçoit un indice différent pour un chiffre du code. La communication est essentielle.
+import json
+import random
 
 def create_state(level):
+    """
+    Crée l'état initial pour le jeu 3 en lisant le fichier enigmes.json
+    et en choisissant une énigme au hasard en fonction du niveau.
+    """
+    # 1. Lire le fichier de données
+    with open('app/data/enigmes.json', encoding='utf-8') as f:
+        data = json.load(f)
+
+    # 2. Naviguer jusqu'aux données du jeu 3 pour le bon niveau
+    game_data = data.get('jeu3_code_secret', {})
+    level_data = game_data.get(level, game_data.get('college', {})) # "college" par défaut
+    
+    # 3. Choisir un "item" (un ensemble de questions/solution) au hasard
+    items_disponibles = level_data.get('items', [])
+    item_choisi = random.choice(items_disponibles) if items_disponibles else {
+        'solution': '000', 'clues': ['Erreur de chargement des questions.']
+    }
+
+    # 4. Créer l'état du jeu avec les données choisies au hasard
     return {
-        'secret_code': '335',
-        'clues': [
-            "Le 1er chiffre est le nombre de pales d'une éolienne.",  # 3
-            "Le 2e chiffre est le nb de couleurs primaires.",         # 3
-            "Le 3e chiffre est le nb de poubelles de tri.",           # 5
-        ],
+        'secret_code': item_choisi['solution'],
+        'clues': item_choisi['clues'], # La liste des questions/indices
         'partie_terminee': False,
         'gagne': False,
         'code_propose': '',
-        'joueurs': [],  # Pour garder l'ordre d'arrivée
-        'indice': "Chaque joueur a un indice différent. Communiquez pour reconstituer le code complet à 3 chiffres."
+        'joueurs': [],  # Pour garder l'ordre d'arrivée des joueurs
+        'indice': level_data.get('description', 'Communiquez pour trouver le code.')
     }
 
 def handle_action(room, sid, action):
     state = room['jeu3_state']
-    # Enregistre l'ordre d'arrivée des joueurs
+    
+    # Enregistre l'ordre d'arrivée des joueurs pour leur distribuer une question différente
     if sid not in state['joueurs']:
         state['joueurs'].append(sid)
+        
     if action.get('type') == 'submit_code':
-        code = str(action.get('code', '')).strip().lower()
-        # Supprime espaces et articles pour la comparaison
-        code = code.replace(' ', '').replace('le', '').replace('la', '').replace('les', '').replace("l'", '')
-        secret = state['secret_code'].lower()
-        secret = secret.replace(' ', '').replace('le', '').replace('la', '').replace('les', '').replace("l'", '')
+        code = str(action.get('code', '')).strip()
+        secret = state['secret_code']
         state['code_propose'] = code
         if code == secret:
             state['gagne'] = True
             state['partie_terminee'] = True
-            room['vue_actuelle'] = 'indice3'
-            # Ajoute la lettre R aux indices collectés
-            if 'indices_collectes' in room and len(room['indices_collectes']) < 3:
-                room['indices_collectes'].append('R')
-        else:
-            state['gagne'] = False
-            state['partie_terminee'] = False
-    # Pas de retour spécial, la room_update suffit
+    # La décision de changer de vue (vers 'indice3') est gérée par main.py

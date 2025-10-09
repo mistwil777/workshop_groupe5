@@ -53,5 +53,49 @@
       "title": "Enjeux Globaux & Biodiversité",
       "mots": [ "empreinte", "electrique", "transport", "azote", "biodiversite", "atmosphere", "biocarburant", "gaz", "fossile", "climat" ]
     }
-  }
+  },
+    "jeu3_code_secret": {
+      "primaire": {
+        "title": "Le Code des Éléments",
+        "description": "Chaque joueur reçoit une question. La réponse est toujours un chiffre. Communiquez pour trouver le code à 3 chiffres !",
+        "items": [
+          {
+            "solution": "341",
+            "clues": [
+              "Combien de côtés a un triangle ?",
+              "Combien de saisons y a-t-il dans une année ?",
+              "Combien de soleils y a-t-il dans notre ciel ?"
+            ]
+          }
+        ]
+      },
+      "college": {
+        "title": "Le Code du Recyclage",
+        "description": "Chaque joueur reçoit une question. La réponse est toujours un chiffre. Communiquez pour trouver le code à 3 chiffres !",
+        "items": [
+          {
+            "solution": "352",
+            "clues": [
+              "Combien de pales a une éolienne classique ?",
+              "Combien de continents sont habités ?",
+              "Quel chiffre se cache dans la formule du gaz carbonique (CO_) ?"
+            ]
+          }
+        ]
+      },
+      "lycee": {
+        "title": "Le Code du Climat",
+        "description": "Chaque joueur reçoit une question. La réponse est toujours un chiffre. Communiquez pour trouver le code à 4 chiffres !",
+        "items": [
+          {
+            "solution": "197",
+            "clues": [
+              "Quel est le numéro atomique de l'Hydrogène ?",
+              "En quelle année a été signé le protocole de Kyoto ?",
+              "Combien de zéros y a-t-il dans le nombre 'mille' ?"
+            ]
+          }
+        ]
+      }
+    }
 }

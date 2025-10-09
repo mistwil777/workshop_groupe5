@@ -20,7 +20,7 @@ window.views.jeu3 = {
         return `
             <div class="card">
                 <h1>Énigme 3 : Code Secret Partagé</h1>
-                <p style="margin-bottom:1em;"><b>Consigne :</b> <br>${joueurs.length <= 1 ? "Tu joues seul : utilise tous les indices pour trouver le code complet à 3 chiffres." : "Chaque joueur reçoit un indice pour un chiffre du code. <br><b>Discutez entre vous</b> pour reconstituer le code complet à 3 chiffres."}<br> <span style="color:#ffe066;">Exemple de code attendu : <b>335</b></span></p>
+                <p style="margin-bottom:1em;"><b>Consigne :</b> <br>${joueurs.length <= 1 ? "Tu joues seul : utilise tous les indices pour trouver le code complet à 3 chiffres." : "Chaque joueur reçoit un indice pour un chiffre du code. <br><b>Discutez entre vous</b> pour reconstituer le code complet à 3 chiffres."}<br> </span></p>
                 ${cluesHtml}
                 <input id="code-input" class="input" maxlength="3" placeholder="Code à 3 chiffres">
                 <button id="validate-code" class="btn">Valider</button>
