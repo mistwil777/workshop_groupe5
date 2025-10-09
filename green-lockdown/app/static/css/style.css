@@ -282,3 +282,15 @@ p {
     60% { transform: translateY(30px) scale(1.08); opacity: 1; }
     100% { transform: translateY(120vh) scale(0.7); opacity: 0; }
 }
+
+/* ... (gardez tout le code css existant) ... */
+
+/* Styles pour le jeu de drag and drop */
+.fragment-draggable {
+    cursor: grab;
+    user-select: none;
+}
+.fragment-draggable.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
