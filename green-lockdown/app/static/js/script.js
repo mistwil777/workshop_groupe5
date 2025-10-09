@@ -1,3 +1,71 @@
+    // =================================================================================
+    // --- MODULE FEUX D'ARTIFICE ---
+    // =================================================================================
+    function lancerFeuxArtifice() {
+        // Crée un canvas plein écran temporaire
+        let canvas = document.getElementById('firework-canvas');
+        if (!canvas) {
+            canvas = document.createElement('canvas');
+            canvas.id = 'firework-canvas';
+            canvas.style.position = 'fixed';
+            canvas.style.top = 0;
+            canvas.style.left = 0;
+            canvas.style.width = '100vw';
+            canvas.style.height = '100vh';
+            canvas.style.pointerEvents = 'none';
+            canvas.style.zIndex = 2000;
+            document.body.appendChild(canvas);
+        }
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const ctx = canvas.getContext('2d');
+        // Simple feu d'artifice : plusieurs explosions colorées
+        const colors = ['#ff4242','#ffe066','#53ff1a','#1ac6ff','#b266ff','#ff66d9'];
+        let particles = [];
+        function createFirework() {
+            const x = Math.random() * canvas.width * 0.8 + canvas.width*0.1;
+            const y = Math.random() * canvas.height * 0.3 + canvas.height*0.2;
+            const color = colors[Math.floor(Math.random()*colors.length)];
+            for (let i=0; i<32; i++) {
+                const angle = (i/32)*2*Math.PI;
+                const speed = Math.random()*3+2;
+                particles.push({
+                    x, y,
+                    vx: Math.cos(angle)*speed,
+                    vy: Math.sin(angle)*speed,
+                    alpha: 1,
+                    color
+                });
+            }
+        }
+        let fireworkCount = 0;
+        function animate() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            particles.forEach(p => {
+                ctx.globalAlpha = p.alpha;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 3, 0, 2*Math.PI);
+                ctx.fillStyle = p.color;
+                ctx.fill();
+            });
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vx *= 0.96;
+                p.vy *= 0.96;
+                p.alpha -= 0.018;
+            });
+            particles = particles.filter(p => p.alpha > 0);
+            if (fireworkCount < 3 && Math.random() < 0.08) { createFirework(); fireworkCount++; }
+            if (particles.length > 0) {
+                requestAnimationFrame(animate);
+            } else {
+                setTimeout(() => { if (canvas.parentNode) canvas.parentNode.removeChild(canvas); }, 400);
+            }
+        }
+        createFirework();
+        animate();
+    }
 // app/static/js/script.js
 
 // Attend que l'intégralité de la page soit chargée.
@@ -189,35 +257,35 @@ document.addEventListener('DOMContentLoaded', () => {
             render: (state) => `<div class="card"><h1>Bravo, énigme 1 réussie !</h1><p>Lettre du code&nbsp;: <span class="badge">${state.indices_collectes[0] || ''}</span></p><div class="actions"><button class="btn" id="continue-button">Continuer</button></div></div>`,
             attachEvents: (state) => {
                 document.getElementById('continue-button').addEventListener('click', () => socket.emit('changer_vue', { token: state.token, vue: 'jeu2' }));
-                setTimeout(() => { if (window.AudioHandler) AudioHandler.playVictoryInterSound(); }, 50);
+                setTimeout(() => { lancerFeuxArtifice(); if (window.AudioHandler) AudioHandler.playVictoryInterSound(); }, 50);
             }
         },
         indice2: {
             render: (state) => `<div class="card"><h1>Bravo, énigme 2 réussie !</h1><p>Lettre trouvée&nbsp;: <span class="badge">${state.indices_collectes[1] || ''}</span></p><div class="actions"><button class="btn" id="continue-button">Continuer</button></div></div>`,
             attachEvents: (state) => {
                 document.getElementById('continue-button').addEventListener('click', () => socket.emit('changer_vue', { token: state.token, vue: 'jeu3' }));
-                setTimeout(() => { if (window.AudioHandler) AudioHandler.playVictoryInterSound(); }, 50);
+                setTimeout(() => { lancerFeuxArtifice(); if (window.AudioHandler) AudioHandler.playVictoryInterSound(); }, 50);
             }
         },
         indice3: {
             render: (state) => `<div class="card"><h1>Bravo, énigme 3 réussie !</h1><p>Lettre trouvée&nbsp;: <span class="badge">${state.indices_collectes[2] || ''}</span></p><div class="actions"><button class="btn" id="continue-button">Continuer</button></div></div>`,
             attachEvents: (state) => {
                 document.getElementById('continue-button').addEventListener('click', () => socket.emit('changer_vue', { token: state.token, vue: 'jeu4' }));
-                setTimeout(() => { if (window.AudioHandler) AudioHandler.playVictoryInterSound(); }, 50);
+                setTimeout(() => { lancerFeuxArtifice(); if (window.AudioHandler) AudioHandler.playVictoryInterSound(); }, 50);
             }
         },
         indice4: {
             render: (state) => `<div class="card"><h1>Bravo, énigme 4 réussie !</h1><p>Lettre trouvée&nbsp;: <span class="badge">${state.indices_collectes[3] || ''}</span></p><div class="actions"><button class="btn" id="continue-button">Continuer</button></div></div>`,
             attachEvents: (state) => {
                 document.getElementById('continue-button').addEventListener('click', () => socket.emit('changer_vue', { token: state.token, vue: 'jeu5' }));
-                setTimeout(() => { if (window.AudioHandler) AudioHandler.playVictoryInterSound(); }, 50);
+                setTimeout(() => { lancerFeuxArtifice(); if (window.AudioHandler) AudioHandler.playVictoryInterSound(); }, 50);
             }
         },
         indice5: {
             render: (state) => `<div class="card"><h1>Bravo, énigme 5 réussie !</h1><p>Lettre trouvée&nbsp;: <span class="badge">${state.indices_collectes[4] || ''}</span></p><div class="actions"><button class="btn" id="continue-button">Continuer</button></div></div>`,
             attachEvents: (state) => {
                 document.getElementById('continue-button').addEventListener('click', () => socket.emit('changer_vue', { token: state.token, vue: 'final' }));
-                setTimeout(() => { if (window.AudioHandler) AudioHandler.playVictoryInterSound(); }, 50);
+                setTimeout(() => { lancerFeuxArtifice(); if (window.AudioHandler) AudioHandler.playVictoryInterSound(); }, 50);
             }
         },
         final: { render: () => `<div class="card"><h1>Dernière Étape : Le Mot de Passe</h1><p>Entrez le mot de passe que vous avez collecté.</p><input id="password-input" class="input" placeholder="Mot de passe" maxlength="5"><button id="submit-password" class="btn">Valider</button></div>`, attachEvents: (state) => { document.getElementById('submit-password').addEventListener('click', () => { const mdp = document.getElementById('password-input').value; socket.emit('game_action', { token: state.token, game: 'final', action: { type: 'submit_password', password: mdp } }); }); }},
