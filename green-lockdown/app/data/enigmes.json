@@ -40,7 +40,18 @@
     }
   ]
   ,
-  "pendu_mots": [
-    "recyclage", "biodiversite", "pollution", "compost", "dechet", "energie", "solaire", "eolienne", "hydraulique", "tri", "durable", "foret", "oceans", "climat", "planete", "faune", "flore", "humus", "plastique", "verre", "papier", "carton", "metal", "gaspillage", "nature", "protection", "renouvelable", "carbone", "empreinte", "ecologie", "arbre", "rivière", "maree", "inondation", "secheresse", "canicule", "deforestation", "rechauffement", "glacier", "banquise", "ozone", "atmosphere", "composteur", "engrais", "pesticide", "agriculture", "abeille", "fleur", "herbivore", "carnivore", "omnivore"
-  ]
+  "pendu_mots": {
+    "primaire": {
+      "title": "Mission Nature & Tri",
+      "mots": [ "tri", "verre", "velo", "air", "feuille", "carbone", "compost", "terre", "arbre", "bleu" ]
+    },
+    "college": {
+      "title": "Sauver le Climat et les Transports",
+      "mots": [ "pollution", "methane", "co2", "dechet", "train", "recyclage", "eolien", "nuage", "voiture", "foret" ]
+    },
+    "lycee": {
+      "title": "Enjeux Globaux & Biodiversité",
+      "mots": [ "empreinte", "electrique", "transport", "azote", "biodiversite", "atmosphere", "biocarburant", "gaz", "fossile", "climat" ]
+    }
+  }
 }

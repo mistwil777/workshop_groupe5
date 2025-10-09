@@ -1,11 +1,18 @@
-def create_state():
-    """Retourne l'état initial pour le jeu du pendu."""
-    import json
-    import random
-    with open('app/data/enigmes.json', encoding='utf-8') as f:
-        data = json.load(f)
-    mots = data.get('pendu_mots', ["recyclage"])
-    mot_choisi = random.choice(mots).upper()
+import random
+
+
+def create_state(niveau='college', mots_disponibles=None):
+    """
+    Retourne l'état initial pour le jeu du pendu.
+    'mots_disponibles' est maintenant une LISTE de mots, fournie par main.py.
+    """
+    if not mots_disponibles:
+        # Fallback de sécurité si la liste de mots est vide
+        mots_disponibles = ['PYTHON']
+
+    # On choisit directement un mot dans la liste fournie
+    mot_choisi = random.choice(mots_disponibles).upper()
+    
     mot = list(mot_choisi)
     return {
         'mot_a_deviner': mot,
@@ -15,8 +22,9 @@ def create_state():
         'max_erreurs': 6,
         'partie_terminee': False,
         'gagne': False,
+        'defaite': False,
         'operateur_sid': None,
-        'indice': f"Ce mot est lié à l'environnement. Il commence par '{mot[0]}' et contient {len(mot)} lettres."
+        'indice': f"Le mot commence par '{mot[0]}' et contient {len(mot)} lettres."
     }
 
 def handle_action(room, sid, action_data):
