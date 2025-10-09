@@ -5,6 +5,4 @@ services:
     container_name: green-lockdown-app
     ports:
       - "5001:5000"
-    volumes:
-      - ./app:/usr/src/app/app
     restart: always
