@@ -54,8 +54,7 @@ def handle_action(room, sid, action):
     # --- Gère la soumission du code final ---
     elif action_type == 'submit_code':
         code_propose = str(action.get('code', '')).strip()
-        code_correct = "".join(state.get('indices_chiffres', [])) # Le code est simplement la suite des chiffres
-        
+        code_correct = "".join(state.get('indices_chiffres', [])) # Correction : code_correct doit être défini
         state['code_propose'] = code_propose
         if code_propose == code_correct:
             state['gagne'] = True
