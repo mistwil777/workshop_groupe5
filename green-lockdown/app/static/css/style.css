@@ -295,6 +295,7 @@ p {
     cursor: grabbing;
 }
 
+
 /* --- Style pour le suivi du mot de passe --- */
 #password-tracker {
     position: fixed;
