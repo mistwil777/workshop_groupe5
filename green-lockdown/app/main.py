@@ -1,13 +1,18 @@
 import eventlet
 eventlet.monkey_patch()
 
+import sys
+import os
+# --- CORRECTION : On ajoute le dossier 'app' au chemin de recherche ---
+sys.path.insert(0, os.path.dirname(__file__))
+
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit, join_room
-
 
 import random
 import string
 import json
+# Maintenant, cette importation fonctionnera de manière fiable
 from games import game_1_pendu, game_2_quiz_order, game_3_code, game_4_text, game_5_quiz
 
 app = Flask(__name__)
