@@ -299,8 +299,8 @@ p {
 #password-tracker {
     position: fixed;
     top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 20px; /* Aligné à gauche */
+    transform: none; /* Plus besoin de centrer horizontalement */
     display: flex;
     gap: 10px;
     background-color: rgba(0, 0, 0, 0.3);
